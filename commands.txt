@@ -1,0 +1,4 @@
+ls -la
+pwd
+test
+last
