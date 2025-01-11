@@ -1,4 +1,15 @@
-ls -la
-pwd
-test
-last
+kubectl config config current-context
+kubectl config config get-clusters
+kubectl config config get-users
+kubectl config use-context <name>
+kubectl create ns web
+kubectl create deployment nginx --image=nginx:1.26.2 --dry-run=client
+kubectl create deployment nginx --image=nginx:1.26.2
+kubectl -n web get deployment nginx
+kubectl -n web get deployment nginx -o yaml
+# Expose HTTP port: ports: - containerPort: 80
+kubectl -n web edit deployment nginx
+kubectl -n web create service nodeport web-svc --tcp=80:80 --node-port=30080 -o yaml --dry-run=client
+kubectl -n web create service nodeport web-svc --tcp=80:80 --node-port=30080 -o yaml
+kubectl -n web create ingress nginx-ingr --rule="/=nginx-svc:80" -o yaml --dry-run=client
+kubectl -n web create ingress nginx-ingr --rule="/=nginx-svc:80" -o yaml
