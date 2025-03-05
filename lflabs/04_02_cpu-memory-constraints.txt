@@ -48,6 +48,8 @@ vim stress.yaml
 ....
 kubectl delete deployment stress
 kubectl create -f stress.yaml
+kubectl get pod
+kubectl logs stress-<ID>
 
 
 
