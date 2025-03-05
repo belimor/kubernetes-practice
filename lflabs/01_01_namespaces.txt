@@ -43,6 +43,7 @@ kubectl create -f https://k8s.io/examples/admin/namespace-prod.json
 kubectl get pods --namespace=development
 kubectl run nginx --image=nginx --namespace=development
 kubectl get pods --namespace=development
+kubectl delete pod nginx -n=development
 
 kubectl config view --minify | grep namespace:
 kubectl config set-context --current --namespace=development
