@@ -2,7 +2,7 @@
 
 ## Helm
 | Name        | Link           | Null  |
-| ------------- |:-------------:| -----:|
+| ------------- |:-------------| -----:|
 | Helm Docs      | [https://helm.sh/docs/topics/charts/](https://helm.sh/docs/topics/charts/) | |
 | Helm Charts Tutorial: A Simple Guide for Beginners | https://devopscube.com/create-helm-chart/ | |
 
