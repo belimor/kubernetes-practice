@@ -30,7 +30,7 @@ ctr run docker.io/library/redis:alpine redis
 nerdctl run --name redise redis:alpine
 nerdctl run --name webserver -p 80:80 -d nginx
 ```
-# crictl - provides cli for CRI
+## crictl - provides cli for CRI
 ```bash
 crictl
 crictl pull busybox
