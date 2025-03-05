@@ -1,0 +1,29 @@
+
+# List the current namespaces in a cluster
+kubectl get namespace
+
+# summary of a specific namespace:
+kubectl get namespaces <name>
+
+# get detailed information
+kubectl describe namespaces <name>
+
+# Create namespace
+vim my-namespace.yaml
+...
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: <insert-namespace-name-here>
+...
+kubectl create -f ./my-namespace.yaml
+
+# Alternatively, you can create namespace using:
+kubectl create namespace <insert-namespace-name-here>
+
+# Deleting a namespace:
+kubectl delete namespaces <insert-some-namespace-name>
+
+kubectl get namespaces
+
+kubectl create -f https://k8s.io/examples/admin/namespace-dev.json
