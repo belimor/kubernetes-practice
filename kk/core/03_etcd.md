@@ -27,13 +27,14 @@ etcdctl cluster-health
 etcdctl mk
 etcdctl mkdir
 etcdctl set
-```bash
+```
 - Whereas the commands are different in version 3
 ```bash
 etcdctl snapshot save
 etcdctl endpoint health
 etcdctl get
 etcdctl put
+```
 
 To set the right version of API set the environment variable ETCDCTL_API command
 
