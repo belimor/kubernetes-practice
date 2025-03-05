@@ -30,8 +30,8 @@ vim stress2.yaml
 # Delete the selflink line, if it exists.
 ....
   labels:
-    app: hog
-  name: hog
+    app: stress
+  name: stress
   namespace: low-usage-limit     # Add this line
   selfLink: /apis/apps/v1/namespaces/default/deployments/stress  # Delete this line
 spec:
