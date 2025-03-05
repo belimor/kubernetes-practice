@@ -1,5 +1,13 @@
 # etcd
 - distributed reliable key-value store that is Simple, Secure, Fast
+```bash
+{
+  "Name": "John",
+  "Age": 35,
+  "location": Toronto,
+  "salary": 120000
+}
+```
 
 ```bash
 apt install etcd
