@@ -18,6 +18,8 @@
 | argo-workflows                 | https://github.com/argoproj/argo-workflows |
 | deploy-java-app-kubernetes     | https://devopscube.com/deploy-java-app-kubernetes/ |
 | deploy-wordpress-on-kubernetes | https://devopscube.com/deploy-wordpress-on-kubernetes/ |
+| Setting up SFTP on Kubernetes for EDI | https://cuteprogramming.blog/2023/03/19/setting-up-sftp-on-kubernetes-for-edi/ |
+| 15 Data Science Kubernetes Projects for Practice in 2025 | https://www.projectpro.io/article/kubernetes-projects/859 |
 
 
 ## Video
