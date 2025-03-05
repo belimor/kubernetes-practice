@@ -11,6 +11,7 @@
 | Helm Charts Tutorial: A Simple Guide for Beginners | https://devopscube.com/create-helm-chart/ |
 
 ## Kubernetes Projects
+| Name | Link |
 |:-------------------------------|:------------------------|
 | Reactive-Resume                | https://github.com/AmruthPillai/Reactive-Resume |
 | kubernetes-projects-learning   | https://github.com/NotHarshhaa/kubernetes-projects-learning |
