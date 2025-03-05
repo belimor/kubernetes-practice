@@ -1,0 +1,61 @@
+# Basic Kubernetes Maintenace
+## backup the etcd database then update the version of Kubernetes used on control plane nodes and worker nodes.
+
+# Find the data directory of the etcd daemon
+sudo grep data-dir /etc/kubernetes/manifests/etcd.yaml
+
+# Log into the etcd container and look at the options etcdctl provides
+kubectl -n kube-system exec -it etcd-<Tab> -- sh
+  etcdctl -h
+  cd /etc/kubernetes/pki/etcd
+  echo *
+  exit
+
+# Check the health of the database using the loopback IP and port 2379
+kubectl -n kube-system exec -it etcd-cp -- sh \
+  -c "ETCDCTL_API=3 \
+  ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt \
+  ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.crt \
+  ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key \
+  etcdctl endpoint health"
+
+# Determine how many databases are part of the cluster
+kubectl -n kube-system exec -it etcd-cp -- sh \
+  -c "ETCDCTL_API=3 \
+  ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt \
+  ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.crt \
+  ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key \
+  etcdctl --endpoints=https://127.0.0.1:2379 member list"
+
+# view the status of the cluster in a table format
+kubectl -n kube-system exec -it etcd-cp -- sh \
+  -c "ETCDCTL_API=3 \
+  ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt \
+  ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.crt \
+  ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key \
+  etcdctl --endpoints=https://127.0.0.1:2379 member list -w table"
+
+# Use the snapshot argument to save the snapshot into the container data directory/var/lib/etcd/
+kubectl -n kube-system exec -it etcd-cp -- sh \
+  -c "ETCDCTL_API=3 \
+  ETCDCTL_CACERT=/etc/kubernetes/pki/etcd/ca.crt \
+  ETCDCTL_CERT=/etc/kubernetes/pki/etcd/server.crt \
+  ETCDCTL_KEY=/etc/kubernetes/pki/etcd/server.key \
+  etcdctl --endpoints=https://127.0.0.1:2379 snapshot save /var/lib/etcd/snapshot.db "
+
+# Verify the snapshot exists from the node perspective
+sudo ls -l /var/lib/etcd/
+
+# Backup the snapshot as well as other information used to create the cluster
+cp:˜$ mkdir $HOME/backup
+cp:˜$ sudo cp /var/lib/etcd/snapshot.db $HOME/backup/snapshot.db-$(date +%m-%d-%y)
+cp:˜$ sudo cp /root/kubeadm-config.yaml $HOME/backup/
+cp:˜$ sudo cp -r /etc/kubernetes/pki/etcd $HOME/backup/
+
+# attempt a database restore after the final lab exercise of the course. More on the restore process can be found here:
+https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#restoring-an-etcd-cluster
+
+
+
+
+

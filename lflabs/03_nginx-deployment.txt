@@ -1,0 +1,67 @@
+kubectl create deployment nginx --image=nginx
+kubectl get deployments
+kubectl describe deployment nginx
+kubectl get events
+kubectl get deployment nginx -o yaml
+kubectl get deployment nginx -o yaml > first.yaml
+vim first.yaml
+kubectl delete deployment nginx
+kubectl create -f first.yaml
+kubectl get deployment nginx -o yaml > second.yaml
+diff first.yaml second.yaml
+kubectl create deployment two --image=nginx --dry-run=client -o yaml
+kubectl get deployment
+kubectl get deployments nginx -o yaml
+kubectl get deployment nginx -o json
+kubectl expose -h
+kubectl expose deployment/nginx
+vim first.yaml
+# ....
+# spec:
+#   containers:
+#   - image: nginx
+#     imagePullPolicy: Always
+#     name: nginx
+#     ports:
+#     - containerPort: 80
+#       protocol: TCP
+#     resources: {}
+# ....
+# Add these
+# three
+# lines
+kubectl replace -f first.yaml --force
+kubectl get deploy,pod
+kubectl expose deployment/nginx
+kubectl get svc nginx
+kubectl get ep nginx
+kubectl describe pod nginx-<ID> | grep Node
+sudo tcpdump -i cilium_vxlan
+curl <CLUSTER_IP>:80
+kubectl get deployment nginx
+kubectl scale deployment nginx --replicas=3
+kubectl get deployment nginx
+kubectl get ep nginx
+kubectl get pod -o wide
+kubectl delete pod nginx-<ID>
+kubectl get po
+kubectl get ep nginx
+curl <CLUSTER_IP>:80
+
+kubectl get po
+kubectl exec nginx-<ID> -- printenv | grep KUBERNETES
+kubectl get svc
+
+kubectl delete svc nginx
+kubectl expose deployment nginx --type=NodePort
+kubectl get svc
+curl ifconfig.io
+# openbrowser http://<IP>:<LP_Port>
+kubectl scale deployment nginx --replicas=0
+kubectl get po
+kubectl scale deployment nginx --replicas=2
+kubectl get po
+kubectl delete deployments nginx
+kubectl delete svc nginx
+
+
