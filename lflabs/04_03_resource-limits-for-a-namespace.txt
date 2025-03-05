@@ -1,0 +1,47 @@
+# Resource Limits for a Namespace
+
+kubectl create namespace low-usage-limit
+kubectl get namespace
+vim low-resource-range.yaml
+...
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: low-resource-range
+spec:
+  limits:
+  - default:
+      cpu: 1
+      memory: 500Mi
+    defaultRequest:
+      cpu: 0.5
+      memory: 100Mi
+    type: Container
+...
+kubectl create -f low-resource-range.yaml -n low-usage-limit
+kubectl get LimitRange
+kubectl get LimitRange --all-namespaces
+kubectl -n low-usage-limit create deployment limited-stress --image vish/stress
+kubectl get deployments --all-namespaces
+kubectl -n low-usage-limit get pods
+kubectl -n low-usage-limit get pod limited-stress-<ID> -o yaml
+cp stress.yaml stress2.yaml
+vim stress2.yaml
+# Delete the selflink line, if it exists.
+....
+  labels:
+    app: hog
+  name: hog
+  namespace: low-usage-limit     # Add this line
+  selfLink: /apis/apps/v1/namespaces/default/deployments/stress  # Delete this line
+spec:
+....
+kubectl create -f stress2.yaml
+kubectl get deployments --all-namespaces
+# run htop on the worker node
+kubectl -n low-usage-limit delete deployment stress limited-stress
+kubectl delete deployment stress
+
+
+
+
