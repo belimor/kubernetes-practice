@@ -1,5 +1,4 @@
 # Cluster Architecture
-======
 ## control plane
 - etcd
 - kube-api
@@ -11,7 +10,7 @@
 - kubelet
 - kube-proxy
 - container-engine
-======
+---
 # Container Runtime Interface - CRI
 ## OCI - Open Container Initiative
 - imagespec
