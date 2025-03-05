@@ -1,6 +1,11 @@
 # kubernetes-practice
 
 ## Helm
+| Name        | Link           | Null  |
+| ------------- |:-------------:| -----:|
+| Helm Docs      | [right-aligned](https://helm.sh/docs/topics/charts/) | |
+| Helm Charts Tutorial: A Simple Guide for Beginners | https://devopscube.com/create-helm-chart/ | |
+
 - Helm Docs
 https://helm.sh/docs/topics/charts/
 - Helm Charts Tutorial: A Simple Guide for Beginners
