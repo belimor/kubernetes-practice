@@ -1,15 +1,18 @@
 # kubernetes-practice
 
+## Linux Foundation
+
+https://www.linuxfoundation.org/
+
+- KubeCon CloudNativeCon, Europ, 2025
+
+https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/
+
 ## Helm
 | Name        | Link           | Null  |
 | ------------- |:-------------| -----:|
 | Helm Docs      | [https://helm.sh/docs/topics/charts/](https://helm.sh/docs/topics/charts/) | |
 | Helm Charts Tutorial: A Simple Guide for Beginners | https://devopscube.com/create-helm-chart/ | |
-
-- Helm Docs
-https://helm.sh/docs/topics/charts/
-- Helm Charts Tutorial: A Simple Guide for Beginners
-https://devopscube.com/create-helm-chart/
 
 ## Kubernetes Projects
 - Reactive-Resume
