@@ -11,7 +11,7 @@ https://devopscube.com/create-helm-chart/
 https://github.com/AmruthPillai/Reactive-Resume
 
 ## Video
-Sander van Vugt @Pearson
+- Sander van Vugt @Pearson
 https://www.linkedin.com/learning/certified-kubernetes-administrator-cka-cert-prep/certified-kubernetes-administrator-cka-introduction
-Mumshad Mannambeth @KodeKloud 
+- Mumshad Mannambeth @KodeKloud 
 https://learn.kodekloud.com/user/courses/cka-certification-course-certified-kubernetes-administrator
