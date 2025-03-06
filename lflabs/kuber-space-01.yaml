@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    kubernetes.io/metadata.name: kuber-space-01
+  name: kuber-space-01
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
