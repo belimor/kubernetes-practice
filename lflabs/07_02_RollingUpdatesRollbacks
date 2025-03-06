@@ -1,0 +1,42 @@
+
+kubectl create namesapce kuber-space-07
+kubectl config view
+kubectl config view | grep namespace:
+kubectl config set-context --current --namespace=kuber-space-07
+kubectl config view --minify | grep namespace:
+kubectl get namespaces
+kubectl get pods
+
+cat deployment.yaml
+kubectl create -f deployment.yaml
+
+kubectl get deploy
+kubectl get pod
+kubectl describe pod webserver-<ID> | grep Image:
+
+kubectl get deploy webserver -o yaml | grep -A 4 strategy
+
+kubectl edit deploy webserver
+....
+strategy:
+rollingUpdate: # remove
+  maxSurge: 25%  # remove
+  maxUnavailable: 25% # remove
+type: Recreate  # Update!
+....
+
+kubectl set image deploy webserver nginx=nginx:1.23.1-alpine
+kubectl get pod
+kubectl describe po webserver-<ID> | grep Image:
+
+kubectl rollout history deploy webserver
+kubectl rollout history deploy webserver --revision=1
+kubectl rollout history deploy webserver --revision=2
+kubectl rollout undo deploy webserver
+kubectl get pod
+kubectl describe pod webserver-6cbc654ddc-7wb5q |grep Image:
+kubectl delete deploy webserver
+
+
+
+
