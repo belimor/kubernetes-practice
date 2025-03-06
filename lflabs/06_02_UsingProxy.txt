@@ -1,0 +1,9 @@
+kubectl proxy -h
+
+kubectl proxy --api-prefix=/ &
+
+curl http://127.0.0.1:8001/api/
+
+curl http://127.0.0.1:8001/api/v1/namespaces
+
+kill <PROCESS_ID>
