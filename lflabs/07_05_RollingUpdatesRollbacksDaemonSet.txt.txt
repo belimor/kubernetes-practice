@@ -1,0 +1,84 @@
+kubectl config set-context --current --namespace=kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl get namespaces
+kubectl get pods
+
+kubectl create -f daemonset-nginx.yaml
+
+kubectl get ds nginx-daemonset -o yaml | grep -A 4 Strategy
+"""
+updateStrategy:
+  rollingUpdate:
+    maxSurge:; 0
+    maxUnavailable: 1
+  type: RollingUpdate
+"""
+
+kubectl edit ds nginx-daemonset
+"""
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: OnDelete  # Edit!
+status:
+"""
+
+kubectl set image ds nginx-daemonset nginx=nginx:1.16.1-alpine
+kubectl describe po nginx-daemonset-<ID> |grep Image:
+kubectl delete po nginx-daemonset-b1dcv
+kubectl get pod
+kubectl describe pod nginx-daemonset-xc86w |grep Image:
+
+kubectl describe pod nginx-daemonset-<ID> |grep Image:
+kubectl rollout history ds nginx-daemonset
+kubectl rollout history ds nginx-daemonset --revision=1
+kubectl rollout history ds nginx-daemonset --revision=2
+kubectl rollout undo ds nginx-daemonset --to-revision=1
+kubectl describe pod nginx-daemonset-<ID> |grep Image:
+kubectl delete pod nginx-daemonset-<ID>
+kubectl get pod
+kubectl describe po nginx-daemonset-<ID> |grep Image:
+kubectl describe ds |grep Image:
+kubectl get ds nginx-daemonset -o yaml
+"""
+apiVersion: apps/v1
+kind: DaemonSet
+.....
+terminationGracePeriodSeconds: 30
+updateStrategy:
+type: OnDelete
+status:
+currentNumberScheduled: 2
+"""
+
+kubectl get ds nginx-daemonset -o yaml > daemonset-nginx-2.yaml
+vim daemonset-nginx-2.yaml
+"""
+....
+name: nginx-daemonset-two
+....
+type: RollingUpdate
+"""
+kubectl create -f daemonset-nginx-2.yaml
+kubectl get pod
+kubectl describe po nginx-daemonset-two-<ID> |grep Image:
+kubectl edit ds nginx-daemonset-two
+kubectl get ds nginx-daemonset-two
+kubectl get pod
+kubectl describe po nginx-daemonset-two-<ID> |grep Image:
+kubectl rollout status ds nginx-daemonset-two
+kubectl rollout history ds nginx-daemonset-two
+kubectl rollout history ds nginx-daemonset-two --revision=2
+kubectl delete ds ds-one nginx-daemonset-two
+
+
+
+
+
+
+
+
+
+
+
+
