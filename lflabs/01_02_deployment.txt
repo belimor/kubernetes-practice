@@ -1,5 +1,11 @@
 # Creating a Deployment
 
+kubectl create namesapce kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl config set-context --current --namespace=kuber-space-01
+kubectl config view --minify | grep namespace:
+
+
 vim nginx-deployment.yaml
 ...
 apiVersion: apps/v1
@@ -78,6 +84,12 @@ kubectl get rs
 kubectl rollout status deployment/nginx-deployment
 
 kubectl delete deployment nginx-deployment
+kubectl config set-context --current --namespace=default
+kubectl delete namesapce kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl get namesapces
+
+
 
 
 
