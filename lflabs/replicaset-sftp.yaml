@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: sftpReplicaOne
+  name: sftp-rs
   labels:
     app: sftp
     system: sftpReplicaOne
@@ -19,3 +19,7 @@ spec:
       containers:
       - name: sftp
         image: atmoz/sftp:latest
+        args:
+        - foo:pass:1001
+        ports:
+        - containerPort: 22
