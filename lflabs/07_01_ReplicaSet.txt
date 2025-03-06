@@ -1,0 +1,21 @@
+
+kubectl create namesapce kuber-space-07
+kubectl config view --minify | grep namespace:
+kubectl config set-context --current --namespace=kuber-space-07
+kubectl config view --minify | grep namespace:
+
+wget https://k8s.io/examples/controllers/frontend.yaml
+kubectl apply -f https://k8s.io/examples/controllers/frontend.yaml
+
+kubectl get rs
+kubectl describe rs/frontend
+kubectl get pods
+kubectl get pods frontend-<ID> -o yaml
+
+wget https://kubernetes.io/examples/pods/pod-rs.yaml
+kubectl apply -f https://kubernetes.io/examples/pods/pod-rs.yaml
+
+kubectl get pods
+kubectl apply -f https://kubernetes.io/examples/pods/pod-rs.yaml
+kubectl apply -f https://kubernetes.io/examples/controllers/frontend.yaml
+kubectl get pods
