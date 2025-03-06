@@ -1,0 +1,158 @@
+
+
+
+vim job.yaml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+name: sleepy
+spec:
+template:
+spec:
+containers:
+- name: resting
+image: busybox
+command: ["/bin/sleep"]
+args: ["3"]
+restartPolicy: Never
+
+kubectl create -f job.yaml
+kubectl get job
+kubectl describe jobs.batch sleepy
+kubectl get job
+kubectl get jobs.batch sleepy -o yaml
+kubectl delete jobs.batch sleepy
+vim job.yaml
+"""
+<output_omitted>
+metadata:
+name: sleepy
+spec:
+completions: 5 #<--Add this line
+template:
+spec:
+containers:
+<output_omitted>
+"""
+kubectl create -f job.yaml
+kubectl get jobs.batch
+kubectl get pods
+kubectl get jobs
+kubectl delete jobs.batch sleepy
+
+vim job.yaml
+<output_omitted>
+name: sleepy
+spec:
+completions: 5
+parallelism: 2 #<-- Add this line
+template:
+spec:
+<output_omitted>
+
+kubectl create -f job.yaml
+kubectl get pods
+kubectl get jobs
+vim job.yaml
+<output_omitted>
+completions: 5
+parallelism: 2
+activeDeadlineSeconds: 15 #<-- Add this line
+template:
+spec:
+containers:
+- name: resting
+image: busybox
+command: ["/bin/sleep"]
+args: ["5"] #<-- Edit this line
+<output_omitted>
+
+kubectl delete jobs.batch sleepy
+kubectl create -f job.yaml
+kubectl get jobs
+kubectl get jobs
+
+kubectl get job sleepy -o yaml
+kubectl delete jobs.batch sleepy
+
+#
+# Create a CronJob
+#
+
+vim cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+#<-- Update this line to CronJob
+metadata:
+name: sleepy
+spec:
+schedule: "*/2 * * * *"
+#<-- Add Linux style cronjob syntax
+jobTemplate:
+#<-- New jobTemplate and spec move
+spec:
+template:
+#<-- This and following lines move
+spec:
+#<-- four spaces to the right
+containers:
+- name: resting
+image: busybox
+command: ["/bin/sleep"]
+args: ["5"]
+restartPolicy: Never
+
+
+kubectl create -f cronjob.yaml
+kubectl get cronjobs.batch
+kubectl get jobs.batch
+kubectl get cronjobs.batch
+kubectl get jobs.batch
+kubectl get jobs.batch
+
+vim cronjob.yaml
+"""
+....
+jobTemplate:
+spec:
+template:
+spec:
+activeDeadlineSeconds: 10
+containers:
+- name: resting
+....
+command: ["/bin/sleep"]
+args: ["30"]
+restartPolicy: Never
+....
+"""
+
+
+kubectl delete cronjobs.batch sleepy
+kubectl create -f cronjob.yaml
+kubectl get jobs
+kubectl get cronjobs.batch
+kubectl get jobs
+kubectl get jobs
+kubectl get cronjobs.batch
+kubectl delete cronjobs.batch sleepy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
