@@ -1,0 +1,26 @@
+kubectl config set-context --current --namespace=kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl get namespaces
+kubectl get pods
+
+cp replicaset-nginx.yaml daemonset-nginx.yaml
+vim daemonset-nginx.yaml
+"""
+....
+kind: DaemonSet  # Edit
+....
+  name: nginx-daemonset
+....
+  replicas: 2 #<<<----Remove this line
+....
+      system: DaemonSetOne #<<-- Edit all references
+....
+"""
+kubectl create -f ds.yaml
+kubectl get ds
+kubectl get pod
+
+kubectl describe pod nginx-daemonset-<ID> | grep Image:
+
+kubectl delete nginx-daemonset
+
