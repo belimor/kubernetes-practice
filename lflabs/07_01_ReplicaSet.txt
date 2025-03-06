@@ -60,9 +60,11 @@ kubectl edit pod nginx-replica-set-<ID>
   managedFields:
 ....
 kubectl get rs
-kubectl get po -L system
+kubectl get pods
+kubectl get pods --show-labels
+kubectl get pods -L system
 kubectl delete rs nginx-replica-set
-kubectl get po
+kubectl get pods
 kubectl get rs
 kubectl get pod
 kubectl delete pod -l system=IsolatedPod
@@ -73,6 +75,7 @@ vim replicaset-sftp.yaml
 kubectl create -f replicaset-sftp.yaml
 kubectl get pods
 kubectl get rs
+kubectl logs sftp-rs-lqwpq
 
 kubectl delete replicaset-sftp.yaml
 
