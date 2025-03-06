@@ -1,0 +1,102 @@
+# Creating a Deployment
+
+kubectl create namesapce kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl config set-context --current --namespace=kuber-space-01
+kubectl config view --minify | grep namespace:
+
+
+vim nginx-deployment.yaml
+...
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+
+kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
+
+kubectl get deployments
+kubectl rollout status deployment/nginx-deployment
+kubectl get deployments
+kubectl get rs
+kubectl get pods --show-labels
+
+# Updating a Deployment
+kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1
+kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1
+kubectl edit deployment/nginx-deployment
+
+kubectl rollout status deployment/nginx-deployment
+kubectl get deployments
+kubectl get rs
+
+kubectl get pods
+kubectl describe deployments
+
+# Rolling Back a Deployment
+kubectl set image deployment/nginx-deployment nginx=nginx:1.161
+kubectl rollout status deployment/nginx-deployment
+kubectl get rs
+kubectl get pods
+kubectl describe deployment
+kubectl rollout history deployment/nginx-deployment
+kubectl rollout history deployment/nginx-deployment --revision=2
+kubectl rollout undo deployment/nginx-deployment
+kubectl rollout undo deployment/nginx-deployment --to-revision=2
+kubectl get deployment nginx-deployment
+kubectl describe deployment nginx-deployment
+
+# Scaling a Deployment
+kubectl scale deployment/nginx-deployment --replicas=10
+kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+kubectl get deploy
+kubectl set image deployment/nginx-deployment nginx=nginx:sometag
+kubectl get rs
+kubectl get deploy
+kubectl get rs
+kubectl get deploy
+kubectl rollout pause deployment/nginx-deployment
+kubectl set image deployment/nginx-deployment nginx=nginx:1.16.1
+kubectl rollout history deployment/nginx-deployment
+kubectl get rs
+kubectl set resources deployment/nginx-deployment -c=nginx --limits=cpu=200m,memory=512Mi
+kubectl rollout resume deployment/nginx-deployment
+kubectl get rs --watch
+kubectl get rs
+
+kubectl rollout status deployment/nginx-deployment
+
+kubectl delete deployment nginx-deployment
+kubectl config set-context --current --namespace=default
+kubectl delete namesapce kuber-space-01
+kubectl config view --minify | grep namespace:
+kubectl get namesapces
+
+
+
+
+
+
+
+
+
+
+
+
