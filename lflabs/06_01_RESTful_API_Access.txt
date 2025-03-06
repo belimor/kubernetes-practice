@@ -1,0 +1,10 @@
+kubectl config view
+
+export token=$(kubectl create token default)
+
+curl https://k8scp:6443/apis --header "Authorization: Bearer $token" -k
+
+curl https://k8scp:6443/api/v1 --header "Authorization: Bearer $token" -k
+
+curl https://k8scp:6443/api/v1/namespaces --header "Authorization: Bearer $token" -k
+
