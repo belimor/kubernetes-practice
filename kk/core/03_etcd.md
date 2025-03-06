@@ -1,5 +1,6 @@
 # etcd
 - distributed reliable key-value store that is Simple, Secure, Fast
+Key-value:
 ```bash
 {
   "Name": "John",
@@ -12,7 +13,6 @@
 ```bash
 apt install etcd
 ```
-
 ## etcd
 - Default port 2379
 ```bash
@@ -23,6 +23,17 @@ etcdctl version
 export ETCDCTL_API=3
 etcdctl put key1 value1
 ```
+### Kubernetes ETCD contains information about:
+- Nodes
+- PODs
+- Configs
+- Secrets
+- Accounts
+- Roles
+- Bindings
+- Others
+
+### etcd keys
 ```bash
 kubectl get pods -n kube-system | grep etcd
 kubectl exec etcd-master -n kube-system etcdctl get / --prefix -keys-only
@@ -43,7 +54,6 @@ etcdctl endpoint health
 etcdctl get
 etcdctl put
 ```
-
 To set the right version of API set the environment variable ETCDCTL_API command
 ```bash
 export ETCDCTL_API=3
@@ -65,8 +75,4 @@ kubectl exec etcd-controlplane -n kube-system -- sh -c "ETCDCTL_API=3 etcdctl ge
   --cert /etc/kubernetes/pki/etcd/server.crt \
   --key /etc/kubernetes/pki/etcd/server.key"
 ```
-
-
-
-
 
