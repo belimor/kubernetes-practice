@@ -1,3 +1,7 @@
+# ReplicaSet
+
+# A ReplicaSet's purpose is to maintain a stable set of replica Pods running at any given time. 
+# Usually, you define a Deployment and let that Deployment manage ReplicaSets automatically.
 
 kubectl create namesapce kuber-space-07
 kubectl config view --minify | grep namespace:
@@ -8,14 +12,79 @@ wget https://k8s.io/examples/controllers/frontend.yaml
 kubectl apply -f https://k8s.io/examples/controllers/frontend.yaml
 
 kubectl get rs
+kubectl get rs frontend -o yaml
 kubectl describe rs/frontend
 kubectl get pods
 kubectl get pods frontend-<ID> -o yaml
 
+# Non-Template Pod acquisitions
+# While you can create bare Pods with no problems, it is strongly recommended to make sure that the bare Pods do not have labels which match the selector of one of your ReplicaSets. The reason for this is because a ReplicaSet is not limited to owning Pods specified by its template-- it can acquire other Pods in the manner specified in the previous sections.
+
 wget https://kubernetes.io/examples/pods/pod-rs.yaml
 kubectl apply -f https://kubernetes.io/examples/pods/pod-rs.yaml
 
+kubectl get rs
+kubectl get rs frontend
 kubectl get pods
-kubectl apply -f https://kubernetes.io/examples/pods/pod-rs.yaml
-kubectl apply -f https://kubernetes.io/examples/controllers/frontend.yaml
+
+kubectl delete rs frontend
+kubectl apply -f pod-rs.yaml
+kubectl get rs
 kubectl get pods
+kubectl apply -f frontend.yaml
+kubectl get rs
+kubectl get pods
+
+kubectl delete rs frontend
+kubectl get rs
+kubectl get pods
+
+#
+
+vim replicaset-nginx.yaml
+
+kubectl create -f replicaset-nginx.yaml
+kubectl get rs
+kubectl get pods
+kubectl describe rs nginxReplicaSet
+kubectl delete rs nginxReplicaSet --cascade=orphan
+kubectl describe rs nginxReplicaSet
+kubectl get pods
+kubectl create -f replicaset-nginx.yaml
+kubectl get rs
+kubectl get pods
+kubectl edit pod nginxReplicaSet-<ID>
+....
+  labels:
+    system: IsolatedPod
+  managedFields:
+....
+kubectl get rs
+kubectl get po -L system
+kubectl delete rs nginxReplicaSet
+kubectl get po
+kubectl get rs
+kubectl get pod
+kubectl delete pod -l system=IsolatedPod
+
+# 
+
+vim replicaset-sftp.yaml
+kubectl create -f replicaset-sftp.yaml
+kubectl get pods
+kubectl get rs
+
+kubectl delete replicaset-sftp.yaml
+
+kubectl config set-context --current --namespace=default
+kubectl get namespaces
+
+
+
+
+
+
+
+
+
+
