@@ -46,14 +46,14 @@ vim replicaset-nginx.yaml
 kubectl create -f replicaset-nginx.yaml
 kubectl get rs
 kubectl get pods
-kubectl describe rs nginxReplicaSet
-kubectl delete rs nginxReplicaSet --cascade=orphan
-kubectl describe rs nginxReplicaSet
+kubectl describe rs nginx-replica-set
+kubectl delete rs nginx-replica-set --cascade=orphan
+kubectl describe rs nginx-replica-set
 kubectl get pods
 kubectl create -f replicaset-nginx.yaml
 kubectl get rs
 kubectl get pods
-kubectl edit pod nginxReplicaSet-<ID>
+kubectl edit pod nginx-replica-set-<ID>
 ....
   labels:
     system: IsolatedPod
@@ -61,7 +61,7 @@ kubectl edit pod nginxReplicaSet-<ID>
 ....
 kubectl get rs
 kubectl get po -L system
-kubectl delete rs nginxReplicaSet
+kubectl delete rs nginx-replica-set
 kubectl get po
 kubectl get rs
 kubectl get pod
