@@ -1,10 +1,20 @@
 # Creating a Deployment
 
-kubectl create namesapce kuber-space-01
-kubectl config view --minify | grep namespace:
+kubectl create namesapce kuber-space-07
+kubectl config view
+kubectl config view | grep namespace:
 kubectl config set-context --current --namespace=kuber-space-01
 kubectl config view --minify | grep namespace:
+kubectl get namespaces
+kubectl get pods
 
+kubectl create deploy webserver --image nginx:1.22.1 --replicas=2 --dry-run=client -o yaml | tee deployment.yaml
+cat deployment.yaml
+
+kubectl create -f deployment.yaml
+kubectl get deploy
+kubectl get pod
+kubectl describe pod webserver-<ID> | grep Image:
 
 vim nginx-deployment.yaml
 ...
@@ -30,6 +40,8 @@ spec:
         ports:
         - containerPort: 80
 
+wget https://k8s.io/examples/controllers/nginx-deployment.yaml
+cat nginx-deployment.yaml
 kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
 
 kubectl get deployments
@@ -37,6 +49,8 @@ kubectl rollout status deployment/nginx-deployment
 kubectl get deployments
 kubectl get rs
 kubectl get pods --show-labels
+
+#
 
 # Updating a Deployment
 kubectl set image deployment.v1.apps/nginx-deployment nginx=nginx:1.16.1
@@ -64,8 +78,8 @@ kubectl get deployment nginx-deployment
 kubectl describe deployment nginx-deployment
 
 # Scaling a Deployment
-kubectl scale deployment/nginx-deployment --replicas=10
-kubectl autoscale deployment/nginx-deployment --min=10 --max=15 --cpu-percent=80
+kubectl scale deployment/nginx-deployment --replicas=6
+kubectl autoscale deployment/nginx-deployment --min=6 --max=10 --cpu-percent=80
 kubectl get deploy
 kubectl set image deployment/nginx-deployment nginx=nginx:sometag
 kubectl get rs
@@ -84,8 +98,10 @@ kubectl get rs
 kubectl rollout status deployment/nginx-deployment
 
 kubectl delete deployment nginx-deployment
+
+
 kubectl config set-context --current --namespace=default
-kubectl delete namesapce kuber-space-01
+kubectl delete namesapce kuber-space-07
 kubectl config view --minify | grep namespace:
 kubectl get namesapces
 
