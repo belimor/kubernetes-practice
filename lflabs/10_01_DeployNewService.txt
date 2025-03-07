@@ -1,0 +1,96 @@
+# Services (also called microservices) are objects which declare a policy to access a logical set of Pods. They are typ-
+# ically assigned with labels to allow persistent access to a resource, when front or back end containers are terminated
+# and replaced.
+# Native applications can use the Endpoints API for access. Non-native applications can use a Virtual IP-based bridge
+# to access back end pods. ServiceTypes Type could be:
+# • ClusterIP default - exposes on a cluster-internal IP. Only reachable within cluster
+# • NodePort Exposes node IP at a static port. A ClusterIP is also automatically created.
+# • LoadBalancer Exposes service externally using cloud providers load balancer. NodePort and ClusterIP auto-
+# matically created.
+# • ExternalName Maps service to contents of externalName using a CNAME record.
+# We use services as part of decoupling such that any agent or object can be replaced without interruption to access
+# from client to back end application.
+
+vim nginx-one.yaml
+"""
+apiVersion: apps/v1
+# Determines YAML versioned schema.
+kind: Deployment
+# Describes the resource defined in this file.
+metadata:
+  name: nginx-one
+  labels:
+    system: secondary
+  # Required string which defines object within namespace.
+  namespace: accounting
+# Existing namespace resource will be deployed into.
+spec:
+  selector:
+    matchLabels:
+      system: secondary
+  # Declaration of the label for the deployment to manage
+  replicas: 2
+  # How many Pods of following containers to deploy
+  template:
+    metadata:
+      labels:
+        system: secondary
+# Some string meaningful to users, not cluster. Keys
+# must be unique for each object. Allows for mapping
+# to customer needs.
+    spec:
+      containers:
+# Array of objects describing containerized application with a Pod.
+# Referenced with shorthand spec.template.spec.containers
+      - image: nginx:1.20.1
+# The Docker image to deploy
+        imagePullPolicy: Always
+        name: nginx
+# Unique name for each container, use local or Docker repo image
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+# Optional resources this container may need to function.
+      nodeSelector:
+        system: secondOne
+# One method of node affinity.
+"""
+kubectl get nodes --show-labels
+kubectl create -f nginx-one.yaml
+kubectl create ns accounting
+kubectl create -f nginx-one.yaml
+kubectl -n accounting get pods
+kubectl -n accounting describe pod nginx-one-<ID>
+kubectl label node <worker_node_name> system=secondOne
+kubectl get nodes --show-labels
+
+# View the pods in the accounting namespace. They may still show as Pending. Depending on how long it has been
+# since you attempted deployment the system may not have checked for the label. If the Pods show Pending after a
+# minute delete one of the pods. They should both show as Running after a deletion. A change in state will cause the
+# Deployment controller to check the status of both Pods.
+
+kubectl -n accounting get pods
+kubectl get pods -l system=secondary --all-namespaces
+kubectl -n accounting expose deployment nginx-one
+kubectl -n accounting get ep nginx-one
+curl <IP>:8080
+curl <IP>:80
+kubectl -n accounting delete deploy nginx-one
+vim nginx-one.yaml
+....
+        ports:
+        - containerPort: 8080 #<-- Edit this line
+          protocol: TCP
+....
+kubectl create -f nginx-one.yaml
+
+
+
+
+
+
+
+
+
+
+
