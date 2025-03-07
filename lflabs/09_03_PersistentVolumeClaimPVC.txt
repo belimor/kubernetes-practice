@@ -1,0 +1,77 @@
+kubectl get pvc
+vim pvc.yaml
+"""
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-one
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+"""
+kubectl create -f pvc.yaml
+kubectl get pvc
+kubectl get pv
+vim nfs-pod.yaml
+"""
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: "1"
+  generation: 1
+  labels:
+    run: nginx
+  name: nginx-nfs    #<-- Edit name
+  namespace: kuber-space-07
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: nginx
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: nginx
+    spec:
+      containers:
+      - image: nginx
+        imagePullPolicy: Always
+        name: nginx
+        volumeMounts:    #<-- Add these three lines
+        - name: nfs-vol
+          mountPath: /opt
+        ports:
+        - containerPort: 80
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      volumes:        #<-- Add these four lines
+      - name: nfs-vol
+        persistentVolumeClaim:
+          claimName: pvc-one
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+"""
+kubectl create -f nfs-pod.yaml
+kubectl get pods
+kubectl describe pod nginx-nfs-<ID>
+  
+
+
+
+
+
