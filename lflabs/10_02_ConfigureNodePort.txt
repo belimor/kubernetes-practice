@@ -1,0 +1,24 @@
+# Configure a NodePort
+
+# We deployed a LoadBalancer which deployed a ClusterIP andNodePort automatically. In this exercise
+# we will deploy a NodePort. While you can access a container from within the cluster, one can use a NodePort to NAT traffic
+# from outside the cluster. One reason to deploy a NodePort instead, is that a LoadBalancer is also a load balancer resource
+# from cloud providers like GKE and AWS.
+
+# In a previous step we were able to view the nginx page using the internal Pod IP address. Now expose the deployment
+# using the --type=NodePort. We will also give it an easy to remember name and place it in the accounting namespace.
+# We could pass the port as well, which could help with opening ports in the firewall.
+
+kubectl -n accounting expose deployment nginx-one --type=NodePort --name=service-lab
+
+kubectl -n accounting describe services
+
+# Locate the exterior facing hostname or IP address of the cluster. The lab assumes use of GCP nodes, which we access
+# via a FloatingIP, we will first check the internal only public IP address. Look for the Kubernetes cp URL. Whichever
+# way you access check access using both the internal and possible external IP address
+
+kubectl cluster-info
+
+curl http://k8scp:32103
+
+curl ifconfig.io
