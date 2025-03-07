@@ -1,0 +1,107 @@
+
+mkdir primary
+echo c > primary/cyan
+echo m > primary/magenta
+echo y > primary/yellow
+echo k > primary/black
+echo "known as key" >> primary/black
+echo blue > favorite
+
+kubectl create configmap colors 
+--from-literal=text=black \
+--from-file=./favorite \
+--from-file=./primary/
+
+kubectl get configmap colors
+kubectl get configmap colors -o yaml
+vim simpleshell.yaml
+"""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shell-demo
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    env:
+    - name: ilike
+      valueFrom:
+        configMapKeyRef:
+          name: colors
+          key: favorite
+"""
+
+kubectl create -f simpleshell.yaml
+kubectl exec shell-demo -- /bin/bash -c 'echo $ilike'
+kubectl delete pod shell-demo
+
+vim simpleshell.yaml
+"""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shell-demo
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    env:
+    - name: ilike
+      valueFrom:
+        configMapKeyRef:
+          name: colors
+          key: favorite
+    envFrom:
+    - configMapRef:
+      name: colors
+"""
+
+kubectl create -f simpleshell.yaml
+kubectl exec shell-demo -- /bin/bash -c 'env'
+kubectl delete pod shell-demo
+
+vim car-map.yaml
+"""
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fast-car
+  namespace: default
+data:
+  car.make: Ford
+  car.model: Mustang
+  car.trim: Shelby
+"""
+kubectl create -f car-map.yaml
+kubectl get configmap fast-car -o yaml
+
+vim simpleshell.yaml
+"""
+<output_omitted>
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      volumeMounts:
+      - name: car-vol
+        mountPath: /etc/cars
+  volumes:
+    - name: car-vol
+      configMap:
+        name: fast-car
+<comment out rest of file>
+"""
+
+kubectl create -f simpleshell.yaml
+kubectl exec shell-demo -- /bin/bash -c 'df -ha |grep car'
+kubectl exec shell-demo -- /bin/bash -c 'cat /etc/cars/car.trim'
+kubectl delete pods shell-demo
+kubectl delete configmap fast-car colors
+
+
+
+
+
+
+
