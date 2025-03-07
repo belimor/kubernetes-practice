@@ -1,0 +1,76 @@
+# Using StorageClass to Dynamically provision a volume
+# StorageClasses in Kubernetes simplify and automate the process of provisioning and managing storage resources, provide
+# users with the flexibility to choose appropriate storage types for their workloads, and help administrators enforce policies
+# and manage storage infrastructure more effectively. StorageClasses enables dynamic provisioning of storage resources.
+# Without StorageClasses, administrators have to manually create PersistentVolumes (PVs) for each PersistentVolumeClaim
+# (PVC) made by users. With StorageClasses, this process is automated. When a user creates a PVC and specifies a
+# StorageClasses, the system automatically creates a corresponding PV that meets the requirements.
+
+kubectl get sc
+
+# We dont have any StorageClass created. Before we can create the sc, we need to deploy the provisioner. Kubernetes
+# doesn’t include an internal NFS provisioner. We need to use an external provisioner to create a StorageClass for NFS.
+# Let us deploy a nfs provisioner.
+
+helm repo add nfs-subdir-external-provisioner \
+https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/
+
+helm install nfs-subdir-external-provisioner \
+nfs-subdir-external-provisioner/nfs-subdir-external-provisioner \
+--set nfs.server=k8scp \
+--set nfs.path=/opt/sfw/
+
+# The installation also created a StorageClass.
+kubectl get sc
+
+kubectl get pv,pvc
+
+vim pvc-sc.yaml
+"""
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-one
+spec:
+  storageClassName: nfs-client
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 200Mi
+"""
+kubectl create -f pvc-sc.yaml
+kubectl get pv,pvc
+vim pod-sc.yaml
+"""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-server
+spec:
+  containers:
+  - image: nginx
+    name: web-container
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: /usr/share/nginx/html
+  volumes:
+  - name: nfs-volume
+    persistentVolumeClaim:
+      claimName: pvc-one
+"""
+kubectl create -f pod-sc.yaml
+echo "Welcome to the demo of storage class" > index.html
+kubectl cp index.html web-server:/usr/share/nginx/html
+ls -l /opt/sfw/default-pvc-one-pvc-<TAB>
+kubectl delete pod/web-server pvc/pvc-one
+
+
+
+
+
+
+
+
+
+
