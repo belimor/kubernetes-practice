@@ -1,0 +1,28 @@
+
+wget https://get.helm.sh/helm-v3.15.2-linux-amd64.tar.gz
+tar -xvf helm-v3.15.2-linux-amd64.tar.gz
+sudo cp linux-amd64/helm /usr/local/bin/helm
+
+helm version
+helm search hub database
+helm repo add ealenn https://ealenn.github.io/charts
+helm repo update
+helm upgrade -i tester ealenn/echo-server --debug
+
+kubectl get svc
+curl <CLUSTER_IP>
+helm list
+helm uninstall tester
+helm list
+
+find $HOME -name *echo*
+cd $HOME/.cache/helm/repository ; tar -xvf echo-server-*
+˜/.cache/helm/repository$ cat echo-server/values.yaml
+
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm fetch bitnami/apache --untar
+cd apache/
+ls
+less values.yaml
+helm install anotherweb .
+
