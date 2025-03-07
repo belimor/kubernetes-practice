@@ -1,21 +1,49 @@
 
-
+wget https://kubernetes.io/examples/controllers/job.yaml
+kubectl apply -f https://kubernetes.io/examples/controllers/job.yaml
 
 vim job.yaml
-
+"""
 apiVersion: batch/v1
 kind: Job
 metadata:
-name: sleepy
+  name: pi
 spec:
-template:
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+      restartPolicy: Never
+  backoffLimit: 4
+"""
+
+kubectl describe job pi
+kubectl get job pi -o yaml
+kubectl get pods
+pods=$(kubectl get pods --selector=batch.kubernetes.io/job-name=pi --output=jsonpath='{.items[*].metadata.name}')
+echo $pods
+
+kubectl logs $pods
+kubectl logs jobs/pi
+
+#
+
+cp job.yaml job-sleepy.yaml
+vim job-sleepy.yaml
+"""
 spec:
-containers:
-- name: resting
-image: busybox
-command: ["/bin/sleep"]
-args: ["3"]
-restartPolicy: Never
+  template:
+    spec:
+      containers:
+      - name: resting
+        image: busybox
+        command: ["/bin/sleep"]
+        args: ["3"]
+      restartPolicy: Never
+  backoffLimit: 4
+"""
 
 kubectl create -f job.yaml
 kubectl get job
@@ -25,15 +53,17 @@ kubectl get jobs.batch sleepy -o yaml
 kubectl delete jobs.batch sleepy
 vim job.yaml
 """
-<output_omitted>
-metadata:
-name: sleepy
 spec:
-completions: 5 #<--Add this line
-template:
-spec:
-containers:
-<output_omitted>
+  completions: 5
+  template:
+    spec:
+      containers:
+      - name: resting
+        image: busybox
+        command: ["/bin/sleep"]
+        args: ["3"]
+      restartPolicy: Never
+  backoffLimit: 4
 """
 kubectl create -f job.yaml
 kubectl get jobs.batch
@@ -42,31 +72,40 @@ kubectl get jobs
 kubectl delete jobs.batch sleepy
 
 vim job.yaml
-<output_omitted>
-name: sleepy
+"""
 spec:
-completions: 5
-parallelism: 2 #<-- Add this line
-template:
-spec:
-<output_omitted>
+  completions: 5
+  parallelism: 2
+  template:
+    spec:
+      containers:
+      - name: resting
+        image: busybox
+        command: ["/bin/sleep"]
+        args: ["3"]
+      restartPolicy: Never
+  backoffLimit: 4
+"""
 
 kubectl create -f job.yaml
 kubectl get pods
 kubectl get jobs
 vim job.yaml
-<output_omitted>
-completions: 5
-parallelism: 2
-activeDeadlineSeconds: 15 #<-- Add this line
-template:
+"""
 spec:
-containers:
-- name: resting
-image: busybox
-command: ["/bin/sleep"]
-args: ["5"] #<-- Edit this line
-<output_omitted>
+  completions: 5
+  parallelism: 2
+  activeDeadlineSeconds: 15
+  template:
+    spec:
+      containers:
+      - name: resting
+        image: busybox
+        command: ["/bin/sleep"]
+        args: ["5"]
+      restartPolicy: Never
+  backoffLimit: 4
+"""
 
 kubectl delete jobs.batch sleepy
 kubectl create -f job.yaml
@@ -80,54 +119,53 @@ kubectl delete jobs.batch sleepy
 # Create a CronJob
 #
 
-vim cronjob.yaml
+vim cronjob-sleepy.yaml
+"""
 apiVersion: batch/v1
 kind: CronJob
-#<-- Update this line to CronJob
 metadata:
-name: sleepy
+  name: sleepy
 spec:
-schedule: "*/2 * * * *"
-#<-- Add Linux style cronjob syntax
-jobTemplate:
-#<-- New jobTemplate and spec move
-spec:
-template:
-#<-- This and following lines move
-spec:
-#<-- four spaces to the right
-containers:
-- name: resting
-image: busybox
-command: ["/bin/sleep"]
-args: ["5"]
-restartPolicy: Never
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: resting
+            image: busybox
+            command: ["/bin/sleep"]
+            args: ["5"]
+          restartPolicy: Never
+"""
 
-
-kubectl create -f cronjob.yaml
+kubectl create -f cronjob-sleepy.yaml
 kubectl get cronjobs.batch
 kubectl get jobs.batch
 kubectl get cronjobs.batch
 kubectl get jobs.batch
 kubectl get jobs.batch
 
-vim cronjob.yaml
+vim cronjob-sleepy.yaml
 """
-....
-jobTemplate:
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: sleepy
 spec:
-template:
-spec:
-activeDeadlineSeconds: 10
-containers:
-- name: resting
-....
-command: ["/bin/sleep"]
-args: ["30"]
-restartPolicy: Never
-....
+  schedule: "*/2 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          activeDeadlineSeconds: 10
+          containers:
+          - name: resting
+            image: busybox
+            command: ["/bin/sleep"]
+            args: ["10"]
+          restartPolicy: Never
 """
-
 
 kubectl delete cronjobs.batch sleepy
 kubectl create -f cronjob.yaml
