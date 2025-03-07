@@ -1,0 +1,41 @@
+# Creating a Persistent NFS Volume (PV)
+
+sudo apt-get update && sudo apt-get install -y nfs-kernel-server
+
+sudo mkdir /opt/sfw
+sudo chmod 1777 /opt/sfw/
+sudo bash -c 'echo software > /opt/sfw/hello.txt'
+sudo vim /etc/exports
+/opt/sfw/ *(rw,sync,no_root_squash,subtree_check)
+sudo exportfs -ra
+
+# worker-node
+sudo apt-get -y install nfs-common
+showmount -e k8scp
+sudo mount k8scp:/opt/sfw /mnt
+ls -l /mnt
+vim PVol.yaml
+"""
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvvol-1
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    path: /opt/sfw
+    server: k8scp #<-- Edit to match cp node
+    readOnly: false
+"""
+kubectl create -f PVol.yaml
+kubectl get pv
+
+
+
+
+
+
