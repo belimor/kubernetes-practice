@@ -1,0 +1,116 @@
+# CoreDNS
+
+# Instead of using IP addresses, we can utilize CoreDNS and predictable hostnames. 
+# Earlier, we created the service-lab NodePort in the Accounting namespace. 
+# Now, we will create a new pod for testing purposes using Ubuntu, and the pod will be named ubuntu.
+
+vim nettool.yaml
+"""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu
+spec:
+  containers:
+  - name: ubuntu
+    image: ubuntu:latest
+    command: [ "sleep" ]
+    args: [ "infinity" ]
+"""
+kubectl create -f nettool.yaml
+kubectl exec -it ubuntu -- /bin/bash
+
+# on container:
+apt-get update ; apt-get install curl dnsutils -y
+dig
+cat /etc/resolv.conf
+dig @10.96.0.10 -x 10.96.0.10
+curl service-lab.accounting.svc.cluster.local.
+curl service-lab
+curl service-lab.accounting
+exit
+
+kubectl -n kube-system get svc kube-dns -o yaml
+kubectl get pod -l k8s-app --all-namespaces
+kubectl -n kube-system get pod coredns-<ID> -o yaml
+kubectl -n kube-system get configmaps
+
+kubectl -n kube-system get configmaps coredns -o yaml
+kubectl -n kube-system get configmaps coredns -o yaml > coredns-backup.yaml
+
+kubectl -n kube-system edit configmaps coredns
+"""
+apiVersion: v1
+data:
+  Corefile: |
+    .:53 {
+      rewrite name regex (.*)\.test\.io {1}.default.svc.cluster.local
+      errors
+      health {
+        lameduck 5s
+      }
+      ready
+      kubernetes cluster.local in-addr.arpa ip6.arpa {
+        pods insecure
+        fallthrough in-addr.arpa ip6.arpa
+        ttl 30
+      }
+      prometheus :9153
+      forward . /etc/resolv.conf {
+        max_concurrent 1000
+      }
+      cache 30
+      loop
+      reload
+      loadbalance
+    }
+"""
+# Delete the coredns pods causing them to re-read the updated configmap
+kubectl -n kube-system delete pod coredns-<ID> coredns-<ID>
+kubectl create deployment nginx --image=nginx
+kubectl expose deployment nginx --type=ClusterIP --port=80
+kubectl get svc
+kubectl exec -it ubuntu -- /bin/bash
+
+# On container
+dig -x 10.104.248.141
+dig nginx.default.svc.cluster.local.
+dig nginx.test.io
+kubectl -n kube-system edit configmaps coredns
+"""
+data:
+  Corefile: |
+    .:53 {
+      rewrite stop {        #<-- Edit this and following two lines
+        name regex (.*)\.test\.io {1}.default.svc.cluster.local
+        answer name (.*)\.default\.svc\.cluster\.local {1}.test.io
+      }
+      errors
+      health {
+        ....
+"""
+# Delete the coredns pods again to ensure they re-read the updated configmap.
+kubectl -n kube-system delete pod coredns-<ID> coredns-<ID>
+kubectl exec -it ubuntu -- /bin/bash
+
+# on container:
+dig nginx.test.io
+
+kubectl delete -f nettool.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
