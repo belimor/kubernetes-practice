@@ -1,0 +1,105 @@
+# If you have a large number of services to expose outside of the cluster, or to expose a low-number port on the host
+# node you can deploy an ingress controller. While nginx and GCE have controllers mentioned a lot in Kubernetes.io,
+# there are many to chose from. Even more functionality and metrics come from the use of a service mesh, such as Istio,
+# Linkerd, Contour, Aspen, or several others.
+
+# We will install linkerd using their own scripts. There is quite a bit of output. Instead of showing all of it the output
+# has been omitted. Look through the output and ensure that everything gets a green check mark. Some steps may
+# take a few minutes to complete. Each command is listed here to make install easier. As well these steps are in the
+# setupLinkerd.txt file.
+
+curl -sL run.linkerd.io/install-edge | sh
+export PATH=$PATH:/home/student/.linkerd2/bin
+echo "export PATH=$PATH:/home/student/.linkerd2/bin" >> $HOME/.bashrc
+linkerd check --pre
+linkerd install --crds | kubectl apply -f -
+linkerd install | kubectl apply -f -
+linkerd check
+linkerd viz install | kubectl apply -f -
+linkerd viz check
+linkerd viz dashboard &
+
+# By default the GUI is on available on the localhost. We will need to edit the service and the deployment to allow
+# outside access, in case you are using a cloud provider for the nodes. Edit to remove all characters after equal sign for
+# -enforced-host, which is around line 59.
+
+"""
+spec:
+  containers:
+    - args:
+        - -linkerd-controller-api-addr=linkerd-controller-api.linkerd.svc.cluster.local:8085
+        - -linkerd-metrics-api-addr=metrics-api.linkerd-viz.svc.cluster.local:8085
+        - -cluster-domain=cluster.local
+        - -grafana-addr=grafana.linkerd-viz.svc.cluster.local:3000
+        - -controller-namespace=linkerd
+        - -viz-namespace=linkerd-viz
+        - -log-level=info
+#       - -enforced-host=       # <-- Comment the line by adding #
+      image: cr.l5d.io/linkerd/web:stable-2.11.1
+      imagePullPolicy: IfNotPresent
+"""
+
+kubectl edit svc web -n linkerd-viz
+"""
+....
+ports:
+  - name: http
+    nodePort: 31500
+    port: 8084
+....
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+....
+"""
+curl ifconfig.io
+
+# From you local system open a browser and go to the public IP and the high-number nodePort. Be aware the look of
+# the web page may look slightly different as the software is regularly updated, for example Grafana is not longer fully
+# integrated.
+
+# In order for linkerd to pay attention to an object we need to add an annotation. The linkerd inject command will do
+# this for us. Generate YAML and pipe it to linkerd then pipe again to kubectl. Expect an error about how the object
+# was created, but the process will work. The command can run on one line if you omit the back-slash. Recreate the
+# nginx-one deployment we worked with in a previous lab exercise.
+
+kubectl get ns accounting
+## Verify namespace exists
+kubectl label node worker<TAB> system=secondOne
+vim nginx-one.yaml
+kubectl apply -f nginx-one.yaml
+## Re-label the node
+## Validate or correct containerPort: 80 (not 8080)
+## Re-deploy nginx-one application
+kubectl -n accounting get dep
+
+kubectl -n accounting get svc
+
+curl 10.102.8.205
+# Figure 11.4: Now shows meshed
+kubectl -n accounting scale deploy nginx-one --replicas=5
+curl 10.102.8.205 #Several times
+
+# Explore some of the other information provided by the GUI. Note that the initial view is of the default namespaces.
+# Change to accounting to see details of the nginx-one deployment.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
