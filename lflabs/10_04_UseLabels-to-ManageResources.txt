@@ -1,0 +1,6 @@
+
+kubectl delete pods -l system=secondary --all-namespaces
+kubectl -n accounting get pods
+kubectl -n accounting get deploy --show-labels
+kubectl -n accounting delete deploy -l system=secondary
+kubectl label node worker system-
