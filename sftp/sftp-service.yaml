@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sftp-service
+spec:
+  selector:
+    app: sftp
+  ports:
+  - protocol: TCP
+    port: 22
+    targetPort: 22
+  type: NodePort  # Change to NodePort if not using cloud provider
