@@ -1,19 +1,60 @@
 # Creating a Persistent NFS Volume (PV)
+# Install the NFS Server
 
-sudo apt-get update && sudo apt-get install -y nfs-kernel-server
+# Update the package lists for the latest available versions.
+apt-get update
 
-sudo mkdir /opt/sfw
-sudo chmod 1777 /opt/sfw/
-sudo bash -c 'echo software > /opt/sfw/hello.txt'
-sudo vim /etc/exports
+# Installs the NFS server package (nfs-kernel-server), which enables the system to share directories over the network.
+apt-get install -y nfs-kernel-server
+
+# Create a Shared Directory
+# Create directory /opt/sfw to be shared via NFS.
+mkdir /opt/sfw
+
+chmod 1777 /opt/sfw/
+# Changes permissions to:
+# 1 → Sticky bit: Only the owner of a file can delete or modify it.
+# 7 → Owner (read, write, execute).
+# 7 → Group (read, write, execute).
+# 7 → Others (read, write, execute).
+# This ensures that all users can read/write files but cannot delete files owned by others.
+
+# Create a Test File
+echo $(date) > /opt/sfw/readme.txt
+
+# Configure the NFS Export
+# Add the Export Rule
+vim /etc/exports
+
 /opt/sfw/ *(rw,sync,no_root_squash,subtree_check)
-sudo exportfs -ra
+# options:
+# /opt/sfw/ → The directory being shared.
+# * → Allows access from any client (you can specify a specific IP instead, e.g., 192.168.1.0/24).
+# rw → Allows read and write access.
+# sync → Ensures that writes to the shared folder are committed immediately (safer but slower).
+# no_root_squash → Allows remote root users to have root privileges (normally, root gets mapped to a lower user for security).
+# subtree_check → Ensures that only the specified directory is shared, not its parent directories.
+
+# Apply the Export Changes
+exportfs -ra
+# exportfs → Manages the NFS shared directories.
+# -r → Re-exports all directories specified in /etc/exports.
+# -a → Exports all shared directories.
+
+# Restart the NFS server for changes to take effect
+systemctl status nfs-kernel-server
+systemctl restart nfs-kernel-server
+systemctl status nfs-kernel-server
 
 # worker-node
-sudo apt-get -y install nfs-common
+apt-get -y install nfs-common
 showmount -e k8scp
-sudo mount k8scp:/opt/sfw /mnt
+
+# Clients can mount the NFS share with:
+mount <NFS_SERVER_IP>:/opt/sfw /mnt
+mount k8scp:/opt/sfw /mnt
 ls -l /mnt
+
 vim PVol.yaml
 """
 apiVersion: v1
