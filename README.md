@@ -24,12 +24,18 @@
 ## Books
 | Books |
 | :--------------- |
+| **The Kubernetes Bible** by Nassim Kebbani, Piotr Tylenda, Russ McKendrick |
+| https://www.oreilly.com/library/view/the-kubernetes-bible/9781838827694/ |
+| **Kubernetes Patterns** by Bilgin Ibryam, Roland Huß |
+| https://www.oreilly.com/library/view/kubernetes-patterns/9781492050278/ |
 | **Kubernetes in Action, Second Edition** by Marko Lukša, Kevin Conner|
 | https://www.manning.com/books/kubernetes-in-action-second-edition |
 | **Kubernetes: Up and Running, 3rd Edition** by Brendan Burns, Joe Beda, Kelsey Hightower, Lachlan Evenson |
 | https://www.oreilly.com/library/view/kubernetes-up-and/9781098110192/ |
 | **Kubernetes Best Practices** by Brendan Burns, Eddie Villalba, Dave Strebel, Lachlan Evenson |
 | https://www.oreilly.com/library/view/kubernetes-best-practices/9781492056461/ |
+| **The Kubernetes Book - Second Edition** by Nigel Poulton, Pushkar Joglekar |
+| https://www.oreilly.com/library/view/the-kubernetes-book/9781835880302/ |
 
 ## Video
 | Video |
