@@ -21,9 +21,17 @@
 | Setting up SFTP on Kubernetes for EDI | https://cuteprogramming.blog/2023/03/19/setting-up-sftp-on-kubernetes-for-edi/ |
 | 15 Data Science Kubernetes Projects for Practice in 2025 | https://www.projectpro.io/article/kubernetes-projects/859 |
 
+| Books |
+| :-------- |
+| **Kubernetes: Up and Running, 3rd Edition** by Brendan Burns, Joe Beda, Kelsey Hightower, Lachlan Evenson |
+| https://www.oreilly.com/library/view/kubernetes-up-and/9781098110192/ |
+| **Kubernetes Best Practices** by Brendan Burns, Eddie Villalba, Dave Strebel, Lachlan Evenson |
+| https://www.oreilly.com/library/view/kubernetes-best-practices/9781492056461/ |
 
 ## Video
-- Sander van Vugt @Pearson
-https://www.linkedin.com/learning/certified-kubernetes-administrator-cka-cert-prep/certified-kubernetes-administrator-cka-introduction
-- Mumshad Mannambeth @KodeKloud 
+| Video |
+| :--------------- |
+| - Sander van Vugt @Pearson |
+| https://www.linkedin.com/learning/certified-kubernetes-administrator-cka-cert-prep/certified-kubernetes-administrator-cka-introduction |
+| - Mumshad Mannambeth @KodeKloud |
 https://learn.kodekloud.com/user/courses/cka-certification-course-certified-kubernetes-administrator
