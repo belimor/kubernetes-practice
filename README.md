@@ -21,8 +21,11 @@
 | Setting up SFTP on Kubernetes for EDI | https://cuteprogramming.blog/2023/03/19/setting-up-sftp-on-kubernetes-for-edi/ |
 | 15 Data Science Kubernetes Projects for Practice in 2025 | https://www.projectpro.io/article/kubernetes-projects/859 |
 
+## Books
 | Books |
-| :-------- |
+| :--------------- |
+| **Kubernetes in Action, Second Edition** by Marko Lukša, Kevin Conner|
+| https://www.manning.com/books/kubernetes-in-action-second-edition |
 | **Kubernetes: Up and Running, 3rd Edition** by Brendan Burns, Joe Beda, Kelsey Hightower, Lachlan Evenson |
 | https://www.oreilly.com/library/view/kubernetes-up-and/9781098110192/ |
 | **Kubernetes Best Practices** by Brendan Burns, Eddie Villalba, Dave Strebel, Lachlan Evenson |
