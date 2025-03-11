@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filebrowser
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filebrowser
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      volumes:
+        - name: root-volume
+          persistentVolumeClaim:
+            claimName: sftp-pvc   #filebrowser-root-pvc
+        - name: db-volume
+          persistentVolumeClaim:
+            claimName: filebrowser-db-pvc
+        - name: config-volume
+          persistentVolumeClaim:
+            claimName: filebrowser-config-pvc
+      containers:
+        - name: filebrowser
+          image: filebrowser/filebrowser:s6
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PUID
+              value: "1000"  # Change this to the actual user ID
+            - name: PGID
+              value: "1000"  # Change this to the actual group ID
+          volumeMounts:
+            - name: root-volume
+              mountPath: /srv
+            - name: db-volume
+              mountPath: /database/filebrowser.db
+              subPath: filebrowser.db
+            - name: config-volume
+              mountPath: /config/settings.json
+              subPath: settings.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: filebrowser-service
+spec:
+  selector:
+    app: filebrowser
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: NodePort  # Change to LoadBalancer if exposing externally
+
