@@ -8,3 +8,10 @@
 ### DockerHub
 - https://hub.docker.com/r/filebrowser/filebrowser
 
+# Atmoz sftp
+
+### GitHub
+- https://github.com/atmoz/sftp
+### DockerHub
+- https://hub.docker.com/r/atmoz/sftp/
+
