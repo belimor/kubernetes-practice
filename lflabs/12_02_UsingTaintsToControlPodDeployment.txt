@@ -1,0 +1,135 @@
+# Using Taints to Control Pod Deployment
+
+# Use taints to manage where Pods are deployed or allowed to run. In addition to assigning a Pod to a group of nodes,
+# you may also want to limit usage on a node or fully evacuate Pods. Using taints is one way to achieve this. You may
+# remember that the cp node begins with a NoSchedule taint. We will work with three taints to limit or remove running
+# pods.
+
+vim taint.yaml
+"""
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taint-deployment
+spec:
+  replicas: 8
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.20.1
+        ports:
+        - containerPort: 80
+"""
+
+kubectl apply -f taint.yaml
+
+# Determine where the containers are running. In the following example three have been deployed on the cp node and
+# five on the secondary node. Remember there will be other housekeeping containers created as well. Your numbers may
+# be different, the actual number is not important, we are tracking the change in numbers.
+
+sudo crictl ps |grep nginx
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+kubectl delete deployment taint-deployment
+
+sudo crictl ps |wc -l
+
+# Now we will use a taint to affect the deployment of new containers. There are three taints, NoSchedule,
+# PreferNoSchedule and NoExecute. The taints having to do with schedules will be used to determine newly deployed
+# containers, but will not affect running containers. The use of NoExecute will cause running containers to move.
+# Taint the secondary node, verify it has the taint then create the deployment again. We will use the key of bubba to
+# illustrate the key name is just some string an admin can use to track Pods.
+
+kubectl taint nodes worker bubba=value:PreferNoSchedule
+
+kubectl describe node |grep Taint
+
+kubectl apply -f taint.yaml
+
+# Locate where the containers are running. We can see that more containers are on the cp, but there still were some
+# created on the secondary. Delete the deployment when you have gathered the numbers.
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+kubectl delete deployment taint-deployment
+
+# Remove the taint, verify it has been removed. Note that the key is used with a minus sign appended to the end.
+
+kubectl taint nodes worker bubba-
+
+kubectl describe node |grep Taint
+
+# This time use the NoSchedule taint, then create the deployment again. The secondary node should not have any new
+# containers, with only daemonsets and other essential pods running.
+
+kubectl taint nodes worker \
+bubba=value:NoSchedule
+
+kubectl apply -f taint.yaml
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+# Remove the taint and delete the deployment. When you have determined that all the containers are terminated create
+# the deployment again. Without any taint the containers should be spread across both nodes.
+
+kubectl delete deployment taint-deployment
+
+kubectl taint nodes worker bubba-
+
+kubectl apply -f taint.yaml
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+# Now use the NoExecute to taint the secondary (worker) node. Wait a minute then determine if the containers have
+# moved. The DNS containers can take a while to shutdown. Some containers will remain on the worker node to continue
+# communication from the cluster.
+
+kubectl taint nodes worker bubba=value:NoExecute
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+# Remove the taint. Wait a minute. Note that all of the containers did not return to their previous placement.
+
+kubectl taint nodes worker bubba-
+
+sudo crictl ps |wc -l
+
+sudo crictl ps |wc -l
+
+kubectl delete deployment taint-deployment
+
+# CHALLENGE STEP Use your knowledge of deployments and scaling items to deploy multiple httpd pods across the
+# nodes and examine the typical spread and spread after using taints.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
