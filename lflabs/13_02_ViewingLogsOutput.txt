@@ -1,0 +1,14 @@
+# Viewing Logs Output
+
+# Container standard out can be seen via the kubectl logs command. If there is no standard out, you would not see any
+# output. In addition, the logs would be destroyed if the container is destroyed.
+
+# View the current Pods in the cluster. Be sure to view Pods in all namespaces.
+# kubectl get pods -A
+
+# View the logs associated with various infrastructure pods. Using the Tab key you can get a list and choose a container.
+# Then you can start typing the name of a pod and use Tab to complete the name.
+
+kubectl -n kube-system logs <Tab><Tab>
+kubectl -n kube-system logs kube-apiserver-cp
+
