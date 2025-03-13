@@ -1,0 +1,100 @@
+# Adding tools for monitoring and metrics
+
+# With the deprecation of Heapster the new, integrated Metrics Server has been further developed and deployed. 
+# The Prometheus project of CNCF.io has matured from incubation to graduation, is commonly used for collecting metrics,
+# and should be considered as well.
+
+# Configure Metrics
+git clone https://github.com/kubernetes-incubator/metrics-server.git
+cd metrics-server/ ; less README.md
+
+# Create the necessary objects. Be aware as new versions are released there may be some changes to the process and
+# the created objects. Use the components.yaml to create the objects. The backslash is not necessary if you type it all on
+# one line.
+kubectl create -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+# View the current objects, which are created in the kube-system namespace. All should show a Running status. You
+# will notice the metrics server pod is in not ready state. Allow the deployment to run insecure TLS and pod will start
+# accepting the traffic.
+kubectl -n kube-system get pods
+
+# Edit the metrics-server deployment to allow insecure TLS. The default certificate is x509 self-signed and not trusted
+# by default. In production you may want to configure and replace the certificate. You may encounter other issues as
+# this software is fast-changing. The need for the kubelet-preferred-address-types line has been reported on some
+# platforms.
+kubectl -n kube-system edit deployment metrics-server
+"""
+    spec:
+      containers:
+      - args:
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-insecure-tls      #<-- Add this line
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname         #<--May be needed
+        image: k8s.gcr.io/metrics-server/metrics-server:v0.3.7
+"""
+
+# Test that the metrics server pod is running and does not show errors. At first you should see a few lines showing the
+# container is listening. As the software changes these messages may be slightly different.
+
+kubectl -n kube-system logs metrics-server<TAB>
+
+# Test that the metrics working by viewing pod and node metrics. Your output may have different pods. It can take an
+# minute or so for the metrics to populate and not return an error.
+
+sleep 120 ; kubectl top pod --all-namespaces
+kubectl top nodes
+
+# Using keys we generated in an earlier lab we can also interrogate the API server. Your server IP address will be different.
+curl --cert ./client.pem --key ./client-key.pem --cacert ./ca.pem https://k8scp:6443/apis/metrics.k8s.io/v1beta1/nodes
+
+# Configure the Dashboard
+
+# While the dashboard looks nice it has not been a common tool in use. Those that could best develop the tool tend to only use
+# the CLI, so it may lack full wanted functionality.
+
+# The first commands do not have the details. Refer to earlier content as necessary.
+
+# 1. Copy the dashboard yaml from the tarball and deploy the dashboard.
+
+cp /home/student/LFS258/SOLUTIONS/s_13/dashboard.yaml .
+kubectl create -f dashboard.yaml
+
+#2. We will give the dashboard full admin rights, which may be more than one would in production. The dashboard is running
+# in the kubernetes-dashboard namespace. kubernetes-dashboard is the name of the service account.
+
+# There is more on service account in the Security chapter.
+
+kubectl get sa -n kubernetes-dashboard
+
+kubectl create clusterrolebinding dashaccess \
+--clusterrole=cluster-admin \
+--serviceaccount=kubernetes-dashboard:kubernetes-dashboard
+
+# On your local system open a browser and navigate to an HTTPS URL made of the Public IP and the high-numbered
+# port. You will get a message about an insecure connection. Select the Advanced button, then Add Exception..., then
+# Confirm Security Exception. Some browsers won’t even give you to option. If nothing shows up try a different browser.
+# The page should then show the Kubernetes Dashboard. You may be able to find the public IP address using curl.
+
+curl ifconfig.io
+
+# We will use the Token method to access the dashboard. With RBAC we need to use the proper token, the
+# kubernetes-dashboard-token in this case. Find the token, copy it then paste into the login page. The Tab key
+# can be helpful to complete the secret name instead of finding the hash.
+
+kubectl create token kubernetes-dashboard -n kubernetes-dashboard
+
+# Access via Browser
+
+# Navigate around the various sections and use the menu to the left as time allows. As the pod view is of the default
+# namespace, you may want to switch over to the kube-system namespace or create a new deployment to view the
+# resources via the GUI. Scale the deployment up and down and watch the responsiveness of the GUI.
+
+
+
+
+
+
+
+
+
