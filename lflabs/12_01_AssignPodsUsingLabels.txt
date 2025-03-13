@@ -1,0 +1,122 @@
+# Assign Pods Using Labels
+
+# While allowing the system to distribute Pods on your behalf is typically the best route, you may want to determine which
+# nodes a Pod will use. For example you may have particular hardware requirements to meet for the workload. You may
+# want to assign VIP Pods to new, faster hardware and everyone else to older hardware.
+# In this exercise we will use labels to schedule Pods to a particular node. Then we will explore taints to have more
+# flexible deployment in a large environment.
+
+kubectl get nodes
+
+# View the current labels and taints for the nodes.
+kubectl describe nodes | grep -A5 -i label
+
+kubectl describe nodes | grep -i taint
+
+# Get a count of how many containers are running on both the cp and worker nodes. There are about 24 containers
+# running on the cp in the following example, and eight running on the worker. There are status lines which increase
+# the wc count. You may have more or less, depending on previous labs and cleaning up of resources. Take note of
+# the number of containers, and then notice the numbers change due to scheduling. The change between nodes is the
+# important information, not the particular number. If you are using cri-o you can view containers using crictl ps.
+
+kubectl get deployments --all-namespaces
+
+sudo crictl ps | wc -l
+sudo crictl ps | wc -l
+
+# For the purpose of the exercise we will assign the cp node to be VIP hardware and the secondary node to be for others.
+kubectl label nodes cp status=vip
+kubectl label nodes worker status=other
+kubectl get nodes --show-labels
+
+# Create vip.yaml to spawn four busybox containers which sleep the whole time. Include the nodeSelector entry.
+vim vip.yaml
+"""
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vip
+spec:
+  containers:
+  - name: vip1
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
+  - name: vip2
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
+  - name: vip3
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
+  - name: vip4
+    image: busybox
+    args:
+    - sleep
+    - "1000000"
+  nodeSelector:
+    status: vip
+"""
+
+# Deploy the new pod. Verify the containers have been created on the cp node. It may take a few seconds for all the
+# containers to spawn. Check both the cp and the secondary nodes. From this point forward use crictl where the step
+# lists docker if you have deployed your cluster with cri-o
+kubectl create -f vip.yaml
+sudo crictl ps | wc -l
+sudo crictl ps | wc -l
+
+# Delete the pod then edit the file, commenting out the nodeSelector lines. It may take a while for the containers to fully
+# terminate.
+kubectl delete pod vip
+vim vip.yaml
+"""
+....
+#  nodeSelector:
+#    status: vip
+"""
+
+# Create the pod again. Containers can now be spawning on either of the node. You may see pods for the daemonsets as well.
+kubectl get pods
+kubectl create -f vip.yaml
+
+# Determine where the new containers have been deployed. They should be more evenly spread this time. Again, the
+# numbers may be different, the change in numbers is what we are looking for. Due to lack of nodeSelector they could
+# go to either node.
+sudo crictl ps | wc -l
+sudo crictl ps | wc -l
+
+# Create another file for other users. Change the names from vip to others, and uncomment the nodeSelector lines.
+cp vip.yaml other.yaml
+sed -i s/vip/other/g other.yaml
+vim other.yaml
+"""
+....
+  nodeSelector:
+    status: other
+"""
+
+# Create the other containers. Determine where they deploy
+kubectl create -f other.yaml
+sudo crictl ps |wc -l
+sudo crictl ps |wc -l
+
+# Shut down both pods and verify they terminated. Only our previous pods should be found
+kubectl delete pods vip other
+kubectl get pods
+
+
+
+
+
+
+
+
+
+
+
+
+
