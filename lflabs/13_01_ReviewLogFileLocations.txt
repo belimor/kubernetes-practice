@@ -1,0 +1,48 @@
+# Review Log File Locations
+
+# In addition to various logs files and command output, you can use journalctl to view logs from the node perspective.
+# We will view common locations of log files, then a command to view container logs. There are other logging options,
+# such as the use of a sidecar container dedicated to loading the logs of another container in a pod.
+# Whole cluster logging is not yet available with Kubernetes. Outside software is typically used, such as Fluentd, part of
+# http://fluentd.org/, which is another member project of CNCF.io, like Kubernetes.
+
+# If using a systemd.based Kubernetes cluster, view the node level logs for kubelet, the local Kubernetes agent. Each
+# node will have different contents as this is node specific
+journalctl -u kubelet |less
+
+# Major Kubernetes processes now run in containers. You can view them from the container or the pod perspective. Use
+# the find command to locate the kube-apiserver log. Your output will be different, but will be very long.
+sudo find / -name "*apiserver*log"
+
+# Take a look at the log file.
+sudo less /var/log/containers/kube-apiserver-cp_kube-system_kube-apiserver-<ID>.log
+
+# Search for and review other log files for coredns, kube-proxy, and other cluster agents.
+
+# If not on a Kubernetes cluster using systemd which collects logs via journalctl you can view the text files on the cp node.
+# (a) /var/log/kube-apiserver.log
+# Responsible for serving the API
+# (b) /var/log/kube-scheduler.log
+# Responsible for making scheduling decisions
+# (c) /var/log/kube-controller-manager.log
+# Controller that manages replication controllers
+
+# /var/log/containers
+# Various container logs
+
+# /var/log/pods/
+# More log files for current Pods.
+
+# Worker Nodes Files (on non-systemd systems)
+# (a) /var/log/kubelet.log
+# Responsible for running containers on the node
+# (b) /var/log/kube-proxy.log
+# Responsible for service load balancing
+
+# More reading: https://kubernetes.io/docs/tasks/debug-application-cluster/debug-service/ 
+# and: https://kubernetes.io/docs/tasks/debug-application-cluster/determine-reason-pod-failure/
+
+
+
+
+
