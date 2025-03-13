@@ -1,9 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: nginx-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -23,11 +23,10 @@ spec:
         - name: nginx
           image: nginx:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           volumeMounts:
             - name: sftp-data
               mountPath: /var/www/html  # Nginx default web root
-              subPath: mftp
             - name: config-volume
               mountPath: /etc/nginx/conf.d/default.conf
               subPath: default.conf
@@ -36,5 +35,4 @@ spec:
           volumeMounts:
             - name: sftp-data
               mountPath: /var/www/html/
-              subPath: mftp
 
