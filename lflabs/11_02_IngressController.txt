@@ -1,0 +1,159 @@
+# Ingress Controller
+
+# Using Helm to install an ingress controller.
+
+# Create two deployments, web-one and web-two, one running httpd, the other nginx. Expose both as ClusterIP services.
+
+# Linkerd does not come with an ingress controller
+# Add ingress controller to help manage traffic. 
+# Leverage a Helm chart to install an ingress controller. 
+# Search the hub to find that there are many available.
+
+helm search hub ingress
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+
+helm repo update
+
+helm fetch ingress-nginx/ingress-nginx --untar
+
+cd ingress-nginx
+ls
+vim values.yaml
+"""
+## DaemonSet or Deployment
+##
+kind: DaemonSet  #<-- Change to DaemonSet, around line 204
+## Annotations to be added to the controller Deployment or DaemonSet
+"""
+
+# Now install the controller using the chart. Note the use of the dot (.) to look in the current directory.
+helm install myingress .
+
+# We now have an ingress controller running, but no rules yet. View the resources that exist. Use the -w option to watch
+# the ingress controller service show up. After it is available use ctrl-c to quit and move to the next command.
+
+kubectl get ingress --all-namespaces
+kubectl --namespace default get services -o wide myingress-ingress-nginx-controller
+kubectl get pod --all-namespaces | grep nginx
+vim ingress.yaml
+"""
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations:
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+namespace: default
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: www.external.com
+    http:
+    paths:
+    - backend:
+      service:
+        name: web-one
+        port:
+          number: 80
+      path: /
+      pathType: ImplementationSpecific
+"""
+
+kubectl create -f ingress.yaml
+kubectl get ingress
+kubectl get pod -o wide | grep myingress
+curl <IP>
+kubectl get svc |grep ingress
+curl <IP>
+# pass a header which matches a URL to one of the services we exposed earlier
+curl -H "Host: www.external.com" http://<IP>
+
+# We can add an annotation to the ingress pods for Linkerd. You will get some warnings, but the command will work
+kubectl get ds myingress-ingress-nginx-controller -o yaml |\ linkerd inject --ingress - | kubectl apply -f -
+
+# Go to the Top page, change the namespace to default and the resource to
+# daemonset/myingress-ingress-nginx-controller. Press start then pass more traffic to the ingress controller and
+# view traffic metrics via the GUI. Let top run so we can see another page added in an upcoming step.
+
+# At this point we would keep adding more and more servers. We’ll configure one more, which would then could be a
+# process continued as many times as desired.
+# Customize the web-two (or whichever deployment is running nginx) welcome page. Run a bash shell inside the web-two
+# pod. Your pod name will end differently. Install vim or an editor inside the container then edit the index.html file of
+# nginx so that the title of the web page will be Internal Welcome Page. Much of the command output is not shown
+# below.
+
+kubectl exec -it web-two-<Tab> -- /bin/bash
+
+# on container
+apt-get update
+apt-get install vim -y
+vim /usr/share/nginx/html/index.html
+"""
+<!DOCTYPE html>
+<html>
+<head>
+<title>Internal Welcome Page</title>  #<-- Edit this line
+<style>
+<output_omitted>
+"""
+exit
+
+kubectl edit ingress ingress-test
+"""
+spec:
+  rules:
+  - host: internal.org
+    http:
+      paths:
+      - backend:
+          service:
+            name: web-two
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+  - host: www.external.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: web-one
+            port:
+              number: 80
+        path: /
+        pathType: ImplementationSpecific
+status:
+"""
+
+# Test the second Host: setting using curl locally as well as from a remote system, be sure the <title> shows the
+# non-default page. Use the main IP of either node. The Linkerd GUI should show a new TO line, if you select the small
+# blue box with an arrow you will see the traffic is going to internal.org.
+
+curl -H "Host: internal.org" http://<IP>/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
