@@ -1,0 +1,107 @@
+# Custom Resource Definition
+
+# The use of CustomResourceDefinitions (CRD), has become a common manner to deploy new objects and opera-
+# tors. Creation of a new operator is beyond the scope of this course, basically it is a watch-loop comparing a spec to
+# the current status, and making changes until the states match. A good discussion of creating a operators can be found
+# here: https://operatorframework.io/.
+
+# First we will examine an existing CRD, then make a simple CRD, but without any particular action. It will be enough to find the
+# object ingested into the API and responding to commands.
+
+kubectl get crd --all-namespaces
+
+# We can see from the names that these CRDs are all working on Cilium, our network plugin. View the cilium-cni.yaml
+# file we used when we initialized the cluster to see how these objects were created, and some CRD templates to review
+
+less cilium-cni.yaml
+kubectl describe crd ciliumcidrgroups.cilium.io
+
+# Now that we have seen some examples, we will create a new YAML file.
+
+vim crd.yaml
+"""
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  # name must match the spec fields below, and be in the form: <plural>.<group>
+  name: crontabs.stable.example.com
+spec:
+  # group name to use for REST API: /apis/<group>/<version>
+  group: stable.example.com
+  # list of versions supported by this CustomResourceDefinition
+  versions:
+    - name: v1
+      # Each version can be enabled/disabled by Served flag.
+      served: true
+      # One and only one version must be marked as the storage version.
+      storage: true
+      schema:
+        openAPIV3Schema:
+        type: object
+        properties:
+          spec:
+            type: object
+            properties:
+              cronSpec:
+                type: string
+              image:
+                type: string
+              replicas:
+                type: integer
+  # either Namespaced or Cluster
+  scope: Namespaced
+  names:
+    # plural name to be used in the URL: /apis/<group>/<version>/<plural>
+    plural: crontabs
+    # singular name to be used as an alias on the CLI and for display
+    singular: crontab
+    # kind is normally the CamelCased singular type. Your resource manifests use this.
+    kind: CronTab
+    # shortNames allow shorter string to match your resource on the CLI
+    shortNames:
+    - ct
+"""
+
+kubectl create -f crd.yaml
+kubectl get crd
+kubectl describe crd crontab<Tab>
+
+# Now that we have a new API resource we can create a new object of that type. In this case it will be a crontab-like
+# image, which does not actually exist, but is being used for demonstration.
+
+vim new-crontab.yaml
+"""
+apiVersion: "stable.example.com/v1"
+  # This is from the group and version of new CRD
+kind: CronTab
+  # The kind from the new CRD
+metadata:
+  name: new-cron-object
+spec:
+  cronSpec: "*/5 * * * *"
+  image: some-cron-image
+    #Does not exist
+"""
+
+kubectl create -f new-crontab.yaml
+kubectl get CronTab
+kubectl get ct
+kubectl describe ct
+
+kubectl delete -f crd.yaml
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
