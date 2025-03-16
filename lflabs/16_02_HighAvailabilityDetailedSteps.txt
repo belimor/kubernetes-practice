@@ -1,0 +1,13 @@
+# High Availability Detailed Steps
+
+# Deploy a Load Balancer
+
+# While there are many options, both software and hardware, we will be using an open source tool HAProxy to configure a load
+# balancer.
+
+# Deploy HAProxy. Log into the proxy node. Update the repos then install a the HAProxy software. Answer yes, should
+# you the installation ask if you will allow services to restart.
+
+apt-get update
+apt-get install -y haproxy vim
+
