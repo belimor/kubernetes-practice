@@ -11,3 +11,82 @@
 apt-get update
 apt-get install -y haproxy vim
 
+# Edit the configuration file and add sections for the front-end and back-end servers. We will comment out the second and
+# third cp node until we are sure the proxy is forwarding traffic to the known working cp.
+
+vim /etc/haproxy/haproxy.cfg
+"""
+defaults
+        log global   #<-- Edit these three lines, starting around line 23
+        option tcplog
+        mode tcp
+....
+        errorfile 503 /etc/haproxy/errors/503.http
+        errorfile 504 /etc/haproxy/errors/504.http
+
+frontend proxynode  #<-- Add the following lines to bottom of file
+  bind *:80
+  bind *:6443
+  stats uri /proxystats
+  default_backend k8sServers
+
+backend k8sServers
+  balance roundrobin
+  server cp 10.128.0.24:6443 check  #<-- Edit these with your IP addresses, port, and hostname
+  # server secondcp 10.128.0.30:6443 check  #<-- Comment out until ready
+  # server thirdcp 10.128.0.66:6443 check  #<-- Comment out until ready
+listen stats
+  bind :9999
+  mode http
+  stats enable
+  stats hide-version
+  stats uri /stats
+"""
+
+# Restart the haproxy service and check the status. You should see the frontend and backend proxies report being
+# started.
+
+systemctl restart haproxy.service
+systemctl status haproxy.service
+
+# On the cp Edit the /etc/hosts file and comment out the old and add a new k8scp alias to the IP address of the proxy server.
+
+vim /etc/hosts
+"""
+10.128.0.64 k8scp   #<-- Add alias to proxy IP
+#10.128.0.24 k8scp   #<-- Comment out the old alias, in case its needed
+127.0.0.1 localhost
+"""
+
+# Use a local browser to navigate to the public IP of your proxy server. The http://34.69.XX.YY:9999/stats is an example
+# your IP address would be different. Leave the browser up and refresh as you run following steps. You can find your
+# public ip using curl. Your IP will be different than the one shown below.
+
+curl ifconfig.io
+
+# Go To <IP>:9999/stats
+
+# Check the node status from the cp node then check the proxy statistics. You should see the byte traffic counter increase.
+
+kubectl get nodes
+
+# Install Software
+
+# We will add two more control planes with stacked etcd databases for cluster quorum. You may want to open up two more
+# PuTTY or SSH sessions and color code the terminals to keep track of the nodes.
+# Initialize the second cp before adding the third cp
+# - Configure and install the kubernetes software on the second cp. Use the same steps as when we first set up the
+# cluster, earlier in the course. You may want to copy and paste from earlier commands in your history to make these
+# steps easier. All the steps up to but not including kubeadm init or kubeadm join A script k8sWorker.sh has been
+# included in the course tarball to make this process go faster, if you would like. View and edit the script to be the correct
+# version before running it.
+# - Install the software on the third cp using the same commands.
+
+
+
+
+
+
+
+
+
