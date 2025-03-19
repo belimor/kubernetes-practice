@@ -8,6 +8,8 @@ kubectl describe node | grep -i taint
 kubectl get pods --all-namespaces
 #kubectl -n kube-system delete pod coredns-<ID> coredns-<ID>
 
-sudo crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock --set image-endpoint=unix:///run/containerd/containerd.sock
+crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock --set image-endpoint=unix:///run/containerd/containerd.sock
 
-sudo cat /etc/crictl.yaml
+cat /etc/crictl.yaml
+
+kubeadm config print init-defaults
