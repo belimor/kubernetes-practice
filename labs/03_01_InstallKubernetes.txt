@@ -1,41 +1,56 @@
-# Install Kubernetes
+# Kubernetes Cluster Installation
 
-# Control Plane
+# Control Plane Node
 
-apt-get update && apt-get upgrade -y
-apt-get install -y vim
-apt install curl apt-transport-https git wget
+# Update and Upgrade System Packages
+apt update 
+apt upgrade -y
 
+# Install Required Packages
+apt install -y vim curl apt-transport-https git wget
+
+# Disable Swap
 swapoff -a
 
+# Load Kernel Modules
+# overlay: A kernel module that enables the OverlayFS filesystem, which is essential for container runtimes like Docker and containerd.
+# br_netfilter: Enables packet filtering for bridged network traffic, which is necessary for Kubernetes networking.
 modprobe overlay
 modprobe br_netfilter
 
+# Configure Kernel Parameters
+# net.bridge.bridge-nf-call-ip6tables = 1: Ensures that bridged IPv6 traffic is processed by iptables, which is required for networking in Kubernetes.
+# net.bridge.bridge-nf-call-iptables = 1: Ensures that bridged IPv4 traffic is processed by iptables.
+# net.ipv4.ip_forward = 1: Enables IP forwarding, which allows the system to forward packets between networks 
 cat << EOF | tee /etc/sysctl.d/kubernetes.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
 EOF
 
+# Apply the Kernel Parameter Changes
 sysctl --system
 
 mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-apt-get update && apt-get install containerd.io -y
+apt update 
+apt install -y containerd.io
+
 containerd config default | tee /etc/containerd/config.toml
 sed -e 's/SystemdCgroup = false/SystemdCgroup = true/g' -i /etc/containerd/config.toml
+
 systemctl restart containerd
 
 mkdir -p -m 755 /etc/apt/keyrings
-curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | tee /etc/apt/sources.list.d/kubernetes.list
 
 apt-get update
 apt-get install -y kubeadm=1.30.1-1.1 kubelet=1.30.1-1.1 kubectl=1.30.1-1.1
+
 apt-mark hold kubelet kubeadm kubectl
 
 hostname -i
@@ -49,6 +64,7 @@ kubernetesVersion: 1.30.1 ##<-- Use the word stable for newest version
 controlPlaneEndpoint: "k8scp:6443" #<-- Use the alias we put in /etc/hosts not the IP
 networking:
   podSubnet: 192.168.0.0/16
+"""
 
 kubeadm init --config=kubeadm-config.yaml --upload-certs --node-name=cp | tee kubeadm-init.out
 
