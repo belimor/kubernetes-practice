@@ -1,3 +1,5 @@
+# Deploy nginx
+
 kubectl create deployment nginx --image=nginx
 kubectl get deployments
 kubectl describe deployment nginx
@@ -15,6 +17,7 @@ kubectl get deployments nginx -o yaml
 kubectl get deployment nginx -o json
 kubectl expose -h
 kubectl expose deployment/nginx
+
 vim first.yaml
 # ....
 # spec:
@@ -30,6 +33,7 @@ vim first.yaml
 # Add these
 # three
 # lines
+
 kubectl replace -f first.yaml --force
 kubectl get deploy,pod
 kubectl expose deployment/nginx

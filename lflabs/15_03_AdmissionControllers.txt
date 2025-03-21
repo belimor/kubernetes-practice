@@ -1,0 +1,13 @@
+# Admission Controllers
+
+# The last stop before a request is sent to the API server is an admission control plug-in. They interact with features
+# such as setting parameters like a default storage class, checking resource quotas, or security settings. A newer feature
+# (v1.7.x) is dynamic controllers which allow new controllers to be ingested or configured at runtime.
+
+# View the current admission controller settings. Unlike earlier versions of Kubernetes the controllers are now com-
+# piled into the server, instead of being passed at run-time. Instead of a list of which controllers to use we can enable and
+# disable specific plugins.
+
+grep admission /etc/kubernetes/manifests/kube-apiserver.yaml
+
+

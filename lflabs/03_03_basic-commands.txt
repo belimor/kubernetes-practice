@@ -1,0 +1,20 @@
+kubectl get node
+kubectl describe node cp
+kubectl describe node | grep -i taint
+kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+
+kubectl describe node | grep -i taint
+
+kubectl get pods --all-namespaces
+#kubectl -n kube-system delete pod coredns-<ID> coredns-<ID>
+
+# Containerd may still be using an out of date notation for the runtime-endpoint. You may see errors about an unde-
+# clared resource type such as unix//:. We will update the crictl configuration. There are many possible configuration
+# options. We will set one, and view the configuration file that is created. We will also set this configuration on worker
+# node as well for our convenience.
+
+# Control Plane and Worker Nodes:
+crictl config --set runtime-endpoint=unix:///run/containerd/containerd.sock --set image-endpoint=unix:///run/containerd/containerd.sock
+cat /etc/crictl.yaml
+
+kubeadm config print init-defaults

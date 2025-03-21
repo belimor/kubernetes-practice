@@ -1,5 +1,9 @@
 # kubernetes-practice
 
+## Kubernetes Documentation
+
+- https://kubernetes.io/docs/home/
+
 ## Linux Foundation: https://www.linuxfoundation.org/
 
 - KubeCon CloudNativeCon, Europ, 2025: https://events.linuxfoundation.org/kubecon-cloudnativecon-europe/

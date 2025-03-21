@@ -1,0 +1,28 @@
+# High Availability Steps
+
+# In this lab we will add two more control planes to our cluster, change taints and deploy an application to a particular
+# node, and test that we can access it from outside the cluster. The nodes will handle various infrastructure services and
+# the etcd database and should be sized accordingly.
+# The steps are presented in two ways. First the general steps for those interested in more of a challenge. Following that
+# will be the detailed steps found in previous labs.
+
+# You will need three more nodes. One to act as a load balancer, the other two will act as cp nodes for quorum. Log into each
+# and use the ip command to fill in the table with the IP addresses of the primary interface of each node. If using GCE nodes it
+# would be ens4, yours may be different. You may need to install software such an editor on the nodes.
+
+# Proxy Node - 
+# Second Control Plane - 
+# Third Control Plane - 
+
+# As the prompts may look similar you may want to change the terminal color or other characteristics to make it easier to keep
+# them distinct. You can also change the prompt using something like: PS1=”ha-proxy$ ”, which may help to keep the terminals
+# distinct.
+
+# High level steps:
+# - Deploy a load balancer configured to pass through traffic on your new proxy node. HAProxy is easy to deploy using
+online documentation. Start with forwarding traffic of the cp alias to just the working cp.
+# - Install the Kubernetes software on the second and third cp nodes.
+# - Use kubeadm join on the second cp, adding it to the cluster as another control plane using the node name.
+# - Join the third cp as another control plane to the cluster using the node name.
+# - Update the proxy to use all three cps backend IPs.
+# - Temporarily shut down the first cp and monitor traffic.

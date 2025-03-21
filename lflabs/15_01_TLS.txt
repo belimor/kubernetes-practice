@@ -1,0 +1,73 @@
+# TLS
+
+# We have learned that the flow of access to a cluster begins with TLS connectivity, then authentication followed by
+# authorization, finally an admission control plug-in allows advanced features prior to the request being fulfilled. The use
+# of Initializers allows the flexibility of a shell-script to dynamically modify the request. As security is an important,
+# ongoing concern, there may be multiple configurations used depending on the needs of the cluster.
+# Every process making API requests to the cluster must authenticate or be treated as an anonymous user.
+
+# While one can have multiple cluster root Certificate Authorities (CA) by default each cluster uses their own, intended for intra-
+# cluster communication. The CA certificate bundle is distributed to each node and as a secret to default service accounts. The
+# kubelet is a local agent which ensures local containers are running and healthy.
+
+# View the kubelet on both the cp and secondary nodes. The kube-apiserver also shows security information such as
+# certificates and authorization mode. As kubelet is a systemd service we will start looking at that output.
+
+systemctl status kubelet.service
+
+# Look at the status output. Follow the CGroup and kubelet information, which is a long line where configuration settings
+# are drawn from, to find where the configuration file can be found.
+
+# Take a look at the settings in the /var/lib/kubelet/config.yaml file. Among other information we can see the
+# /etc/kubernetes/pki/ directory is used for accessing the kube-apiserver. Near the end of the output it also sets the
+# directory to find other pod spec files.
+
+less /var/lib/kubelet/config.yaml
+
+# Other agents on the cp node interact with the kube-apiserver. View the configuration files where these settings are
+# made. This was set in the previous YAML file. Look at one of the files for cert information.
+
+ls /etc/kubernetes/manifests/
+
+less /etc/kubernetes/manifests/kube-controller-manager.yaml
+
+# The use of tokens has become central to authorizing component communication. The tokens are kept as secrets. Take
+# a look at the current secrets in the kube-system namespace. Note: Token is valid only for 24 hours and then the secret
+# is removed, If you dont see the secret please eexecute, sudo kubeadm token create
+
+kubectl -n kube-system get secrets
+
+# Take a closer look at one of the secrets and the token within. The bootstrap-token could be one to look at. The use
+# of the Tab key can help with long names. Long lines have been truncated in the output below.
+
+kubectl -n kube-system get secrets bootstrap-token<Tab> -o yaml
+
+# The kubectl config command can also be used to view and update parameters. When making updates this could avoid
+# a typo removing access to the cluster. View the current configuration settings. The keys and certs are redacted from the
+# output automatically.
+
+kubectl config view
+
+# View the options, such as setting a password for the admin instead of a key. Read through the examples and options.
+
+kubectl config set-credentials -h
+
+# Make a copy of your access configuration file. Later steps will update this file and we can view the differences.
+
+cp $HOME/.kube/config $HOME/cluster-api-config
+
+# Explore working with cluster and security configurations both using kubectl and kubeadm. Among other values, find
+# the name of your cluster. You will need to become root to work with kubeadm.
+
+kubectl config <Tab><Tab>
+
+kubeadm token -h
+
+kubeadm config -h
+
+kubeadm config print init-defaults
+
+
+
+
+

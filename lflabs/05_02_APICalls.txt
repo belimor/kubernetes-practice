@@ -1,0 +1,56 @@
+# API Calls
+
+apt-get install -y strace
+
+kubectl get endpoints
+
+# Run this command again, preceded by strace. You will get a lot of output. Near the end you will note several openat
+# functions to a local directory. If you cannot find the lines, you
+# may want to redirect all output to a file and grep for them. This information is cached, so you may see some differences
+# should you run the command multiple times. As well your IP address may be different
+
+strace kubectl get endpoints
+
+# Change to the parent directory and explore. Your endpoint IP will be different, so replace the following with one suited
+# to your system.
+
+cd ~/.kube/cache/discovery/
+ls
+cd k8scp_6443/
+
+# Use the find command to list out the subfiles. The prompt has been modified to look better on this page.
+
+find .
+
+# View the objects available in version 1 of the API. For each object, or kind:, you can view the verbs or actions for that
+# object, such as create seen in the following example. Note the prompt has been truncated for the command to fit on one
+# line. Some are HTTP verbs, such as GET, others are product specific options, not standard HTTP verbs. The command
+# may be python, depending on what version is installed.
+
+python3 -m json.tool v1/serverresources.json
+
+# Some of the objects have shortNames, which makes using them on the command line much easier. Locate the
+# shortName for endpoints.
+
+python3 -m json.tool v1/serverresources.json | less
+
+# Use the shortName to view the endpoints. It should match the output from the previous command
+
+kubectl get ep
+
+# We can see there are 37 objects in version 1 file
+
+python3 -m json.tool v1/serverresources.json | grep kind
+python3 -m json.tool apps/v1/serverresources.json | grep kind
+
+# Delete the curlpod to recoup system resources
+
+kubectl delete po curlpod
+
+# Take a look around the other files in this directory.
+
+
+
+
+
+
