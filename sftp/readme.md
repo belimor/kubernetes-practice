@@ -19,8 +19,6 @@
 mkpasswd -m sha-512 'your_password'
 echo -n 'user_name:$6$...JsX.$6o...xg1:e:::ftp-file-storage' | base64
 vim sftp-secret.yaml
-```
-
 """
 apiVersion: v1
 kind: Secret
@@ -30,3 +28,4 @@ type: Opaque
 data:
   SFTP_USERS: dXN...nZQ==
 """
+```
