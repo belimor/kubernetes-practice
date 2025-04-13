@@ -2,7 +2,7 @@
 
 #### List the current namespaces in a cluster
 ```bash
-kubectl get namespace
+kubectl get namespaces
 ```
 
 #### Default namespaces
@@ -34,27 +34,28 @@ metadata:
 - Apply it with kubectl
 ```bash
 kubectl create -f ./my-namespace.yaml
+kubectl get namespaces
 ```
 #### Create a namespace using a simple command
 ```bash
 kubectl create namespace kube-space02
+kubectl get namespaces
 ```
 #### Delete a namespace from yaml
 ```bash
 kubectl delete -f ./my-namespace.yaml
+kubectl get namespaces
 ```
 #### Delete namespace by name
 ```bash
 kubectl delete namespaces kube-space02
-```
-#### List all namespaces
-```bash
 kubectl get namespaces
 ```
 #### Create namespaces from examples
 ```bash
 kubectl create -f https://k8s.io/examples/admin/namespace-dev.json
 kubectl create -f https://k8s.io/examples/admin/namespace-prod.json
+kubectl get namespaces
 ```
 #### View pods in a namespace
 ```bash
