@@ -109,7 +109,7 @@ kubectl get pods -l app=cattle -n=production
 ```
 #### Clean up deployments
 ```bash
-kubectl delete deployment cattle -n=productio
+kubectl delete deployment cattle -n=production
 kubectl delete deployment snowflake -n=development
 ```
 #### Clean up namespaces
