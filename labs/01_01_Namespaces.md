@@ -7,37 +7,37 @@ kubectl get namespace
 
 #### Default namespaces
 Kubernetes starts with four default namespaces:
-**default**: Used for user workloads when no other namespace is specified.
-**kube-node-lease**: Stores node heartbeat info to help detect node failures.
-**kube-public**: Readable by all users; used for resources meant to be publicly accessible in the cluster.
-**kube-system**: Contains system-level components and objects managed by Kubernetes itself.
+- **default**: Used for user workloads when no other namespace is specified.
+- **kube-node-lease**: Stores node heartbeat info to help detect node failures.
+- **kube-public**: Readable by all users; used for resources meant to be publicly accessible in the cluster.
+- **kube-system**: Contains system-level components and objects managed by Kubernetes itself.
 
 #### View a specific namespace
 ```bash
-kubectl get namespaces <name>
+kubectl get namespaces kube-system
 ```
 #### Get detailed information
 ```bash
-kubectl describe namespaces <name>
+kubectl describe namespaces kube-system
 ```
 #### Create a namespace
 - Create a YAML file
 ```bash
 vim my-namespace.yaml
 ```
-```
+```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: <insert-namespace-name-here>
+  name: kube-space01
 ```
 - Apply it with kubectl
-```vash
+```bash
 kubectl create -f ./my-namespace.yaml
 ```
 #### Create a namespace using a simple command
 ```bash
-kubectl create namespace <insert-namespace-name-here>
+kubectl create namespace kube-space02
 ```
 #### Delete a namespace from yaml
 ```bash
@@ -45,7 +45,7 @@ kubectl delete -f ./my-namespace.yaml
 ```
 #### Delete namespace by name
 ```bash
-kubectl delete namespaces <insert-some-namespace-name>
+kubectl delete namespaces kube-space02
 ```
 #### List all namespaces
 ```bash
