@@ -7,10 +7,10 @@ kubectl get namespace
 
 #### Default namespaces
 Kubernetes starts with four default namespaces:
-default: Used for user workloads when no other namespace is specified.
-kube-node-lease: Stores node heartbeat info to help detect node failures.
-kube-public: Readable by all users; used for resources meant to be publicly accessible in the cluster.
-kube-system: Contains system-level components and objects managed by Kubernetes itself.
+**default**: Used for user workloads when no other namespace is specified.
+**kube-node-lease**: Stores node heartbeat info to help detect node failures.
+**kube-public**: Readable by all users; used for resources meant to be publicly accessible in the cluster.
+**kube-system**: Contains system-level components and objects managed by Kubernetes itself.
 
 #### View a specific namespace
 ```bash
@@ -21,7 +21,7 @@ kubectl get namespaces <name>
 kubectl describe namespaces <name>
 ```
 #### Create a namespace
-1. Create a YAML file
+- Create a YAML file
 ```bash
 vim my-namespace.yaml
 ```
@@ -31,61 +31,89 @@ kind: Namespace
 metadata:
   name: <insert-namespace-name-here>
 ```
-2. Apply it with kubectl
+- Apply it with kubectl
 ```vash
 kubectl create -f ./my-namespace.yaml
 ```
-
-# Alternatively, you can create namespace using:
+#### Create a namespace using a simple command
+```bash
 kubectl create namespace <insert-namespace-name-here>
-
-# Deleting a namespace:
+```
+#### Delete a namespace from yaml
+```bash
 kubectl delete -f ./my-namespace.yaml
+```
+#### Delete namespace by name
+```bash
 kubectl delete namespaces <insert-some-namespace-name>
-
+```
+#### List all namespaces
+```bash
 kubectl get namespaces
-
+```
+#### Create namespaces from examples
+```bash
 kubectl create -f https://k8s.io/examples/admin/namespace-dev.json
 kubectl create -f https://k8s.io/examples/admin/namespace-prod.json
-
+```
+#### View pods in a namespace
+```bash
 kubectl get pods --namespace=development
+```
+#### Run a pod in a namespace
+```bash
 kubectl run nginx --image=nginx --namespace=development
 kubectl get pods --namespace=development
+```
+#### Delete a pod in a namespace
+```bash
 kubectl delete pod nginx -n=development
-
+```
+#### Check current context namespace
+```bash
 kubectl config view --minify | grep namespace:
+```
+#### Set the current context's namespace
+```bash
 kubectl config set-context --current --namespace=development
 kubectl config view --minify | grep namespace:
+```
+#### Reset to default namespace
+```bash
 kubectl config set-context --current --namespace=default
-
+```
+#### Show labels on namespaces
+```bash
 kubectl get namespaces --show-labels
-
-kubectl create deployment snowflake --image=registry.k8s.io/serve_hostname -n=development --replicas=2
-
+```
+#### Create a deployment in the development namespace
+```bash
+kubectl create deployment snowflake --image=registry.k8s.io/serve_hostname -n=development --replicas=3
+```
+#### View deployment and pods in developmetn
+```bash
 kubectl get deployment -n=development
-
 kubectl get pods -l app=snowflake -n=development
-
+```
+#### View deployment and pods in production
+```bash
 kubectl get deployment -n=production
-
 kubectl get pods -n=production
-
+```
+#### Create and scale deployment in the production namespace
+```bash
 kubectl create deployment cattle --image=registry.k8s.io/serve_hostname -n=production
-
 kubectl scale deployment cattle --replicas=5 -n=production
-
 kubectl get deployment -n=production
-
 kubectl get pods -l app=cattle -n=production
-
-kubectl delete deployment cattle -n=production
-
+```
+#### Clean up deployments
+```bash
+kubectl delete deployment cattle -n=productio
 kubectl delete deployment snowflake -n=development
-
+```
+#### Clean up namespaces
+```bash
 kubectl delete -f https://k8s.io/examples/admin/namespace-dev.json
-
 kubectl delete -f https://k8s.io/examples/admin/namespace-prod.json
-
-
-
-
+```
