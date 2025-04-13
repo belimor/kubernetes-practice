@@ -1,4 +1,4 @@
-#
+# Kubernetes Cluster installation. Worker Nodes.
 
 apt-get update && apt-get upgrade -y
 
@@ -57,9 +57,10 @@ vim /etc/hosts
 """
 
 kubeadm join \
-k8scp:6443 --token wcal99.hxv9v0gtnz42g6dr \
---discovery-token-ca-cert-hash \
-sha256:0fb62b3c47bfd3af3c15d21f2ab6082fad1f913b244d5980816f8147ce9936ef --node-name=worker
+k8scp:6443 \
+--token wcal99.hxv9v0gtnz42g6dr \
+--discovery-token-ca-cert-hash sha256:0fb62b3c47bfd3af3c15d21f2ab6082fad1f913b244d5980816f8147ce9936ef \
+--node-name=worker
 
 kubectl get nodes
 
