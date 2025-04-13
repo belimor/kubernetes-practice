@@ -12,25 +12,29 @@ kube-node-lease: Stores node heartbeat info to help detect node failures.
 kube-public: Readable by all users; used for resources meant to be publicly accessible in the cluster.
 kube-system: Contains system-level components and objects managed by Kubernetes itself.
 
-#### summary of a specific namespace:
+#### View a specific namespace
 ```bash
 kubectl get namespaces <name>
 ```
-#### get detailed information
+#### Get detailed information
 ```bash
 kubectl describe namespaces <name>
 ```
-#### Create namespace
+#### Create a namespace
+1. Create a YAML file
 ```bash
 vim my-namespace.yaml
 ```
-# text block:
+```
 apiVersion: v1
 kind: Namespace
 metadata:
   name: <insert-namespace-name-here>
-
+```
+2. Apply it with kubectl
+```vash
 kubectl create -f ./my-namespace.yaml
+```
 
 # Alternatively, you can create namespace using:
 kubectl create namespace <insert-namespace-name-here>
